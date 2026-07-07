@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="La Morò">
+  <defs>
+    <linearGradient id="fleaf" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8c9a45"/>
+      <stop offset="1" stop-color="#5f6d2c"/>
+    </linearGradient>
+    <radialGradient id="folive" cx="0.35" cy="0.3" r="0.85">
+      <stop offset="0" stop-color="#5a6b3f"/>
+      <stop offset="0.45" stop-color="#2b3320"/>
+      <stop offset="1" stop-color="#0f1309"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#faf6ec"/>
+  <path d="M14,40 C22,26 36,16 52,14 C44,30 30,42 18,44 C16,43 15,42 14,40 Z" fill="url(#fleaf)"/>
+  <path d="M18,38 C28,26 40,20 50,18" fill="none" stroke="#465224" stroke-width="1.6" opacity="0.7"/>
+  <g transform="translate(40,44)">
+    <ellipse cx="0" cy="0" rx="13" ry="15.5" fill="url(#folive)"/>
+    <ellipse cx="-4" cy="-5.5" rx="3.4" ry="4.8" fill="#c7cf9b" opacity="0.55"/>
+    <path d="M2,-15 q3,-3 6,-2" fill="none" stroke="#5f6d2c" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+</svg>

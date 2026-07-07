@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agriturismo La Morò — Cucina salentina tra gli ulivi, Otranto</title>
+  <meta name="description" content="Agriturismo La Morò a Frassanito, Otranto: ristorante serale di cucina tipica salentina tra gli ulivi e punto vendita di prodotti agricoli autoprodotti. Aperti tutte le sere da giugno a settembre.">
+  <meta name="theme-color" content="#5e6b2e">
+  <link rel="canonical" href="https://www.lamoro.it/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="restaurant">
+  <meta property="og:site_name" content="Agriturismo La Morò">
+  <meta property="og:title" content="Agriturismo La Morò — Cucina salentina tra gli ulivi">
+  <meta property="og:description" content="Ristorante serale di cucina tipica salentina e punto vendita di prodotti agricoli, a Frassanito (Otranto). Aperti tutte le sere da giugno a settembre.">
+  <meta property="og:image" content="assets/images/og-cover.jpg">
+  <meta property="og:locale" content="it_IT">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/images/favicon.svg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Structured data: Restaurant -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Agriturismo La Morò",
+    "servesCuisine": "Cucina salentina, Italiana",
+    "description": "Ristorante serale di cucina tipica salentina e punto vendita di prodotti agricoli autoprodotti.",
+    "image": "assets/images/og-cover.jpg",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Località Frassanito, Via Azienda Frassanito",
+      "addressLocality": "Otranto",
+      "addressRegion": "LE",
+      "postalCode": "73028",
+      "addressCountry": "IT"
+    },
+    "openingHours": "Mo-Su 19:00-23:00",
+    "acceptsReservations": "True"
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ============ INTRO / PRELOADER ============ -->
+  <div id="intro" class="intro" role="presentation">
+    <div class="intro__inner">
+      <img src="assets/images/logo.svg" alt="" class="intro__logo" id="introLogo" width="900" height="320">
+    </div>
+    <button class="intro__skip" id="introSkip" type="button">Entra &rsaquo;</button>
+  </div>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header__row">
+      <a href="#hero" class="brand" aria-label="Agriturismo La Morò — home">
+        <img src="assets/images/logo.svg" alt="Agriturismo La Morò" class="brand__logo">
+        <img src="assets/images/favicon.svg" alt="Agriturismo La Morò" class="brand__mark">
+      </a>
+
+      <nav class="nav" aria-label="Navigazione principale">
+        <button class="nav__toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Apri il menù di navigazione">
+          <span></span><span></span><span></span>
+        </button>
+        <ul class="nav__menu" id="navMenu">
+          <li><a href="#chi-siamo">Chi siamo</a></li>
+          <li><a href="#menu">Il menù</a></li>
+          <li><a href="#prodotti">Prodotti</a></li>
+          <li><a href="#ambiente">L'ambiente</a></li>
+          <li><a href="#contatti" class="nav__cta">Vieni a trovarci</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <div class="hero__bg" data-parallax>
+        <img src="assets/images/hero-giardino-sera.jpg" alt="Il giardino dell'Agriturismo La Morò illuminato la sera dalle lucine tra gli ulivi" fetchpriority="high">
+      </div>
+      <div class="hero__scrim"></div>
+      <div class="container hero__content">
+        <p class="hero__eyebrow">Frassanito · Otranto · Salento</p>
+        <h1 class="hero__title">Agriturismo La Morò</h1>
+        <p class="hero__subtitle">Cucina salentina genuina, tra gli ulivi di Frassanito</p>
+        <div class="hero__actions">
+          <a href="#menu" class="btn btn--primary">Scopri il menù</a>
+          <a href="#contatti" class="btn btn--ghost">Vieni a trovarci</a>
+        </div>
+      </div>
+      <a href="#chi-siamo" class="hero__scroll" aria-label="Scorri verso il basso">
+        <span></span>
+      </a>
+    </section>
+
+    <!-- ============ CHI SIAMO ============ -->
+    <section class="section chi-siamo" id="chi-siamo">
+      <div class="container grid-2">
+        <div class="chi-siamo__media" data-reveal>
+          <img src="assets/images/chisiamo-ingresso.jpg" loading="lazy"
+               alt="L'ingresso dell'Agriturismo La Morò con l'insegna tra le fioriere fiorite">
+          <span class="media-frame"></span>
+        </div>
+        <div class="chi-siamo__text" data-reveal>
+          <p class="eyebrow"><span class="sprig" aria-hidden="true"></span> Chi siamo</p>
+          <h2>Un angolo di campagna salentina</h2>
+          <p>Da anni l'Agriturismo La Morò custodisce un angolo di campagna salentina immerso nel verde, a due passi da Otranto. Non un semplice ristorante, ma un'azienda agricola che vive di stagioni, raccolti e tradizione: le verdure che portiamo in tavola nascono nei nostri campi, e la cucina segue il ritmo lento della terra.</p>
+          <p>La nostra filosofia è semplice: <strong>genuinità della materia prima, rispetto della tradizione salentina, accoglienza sincera.</strong></p>
+          <p>Siamo aperti tutte le sere, da giugno a settembre, per la cena, nella nostra sala interna o, nei mesi estivi, all'aperto tra gli ulivi. Prenotazione gradita.</p>
+          <ul class="pill-list">
+            <li>Azienda agricola</li>
+            <li>Cucina del territorio</li>
+            <li>Solo cena · prenotazione gradita</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MENU ============ -->
+    <section class="section menu" id="menu">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow"><span class="sprig" aria-hidden="true"></span> La cucina</p>
+          <h2>I sapori del Salento, in tavola ogni sera</h2>
+          <p class="section-lead">Tutti i nostri piatti sono preparati al momento, con ingredienti freschi provenienti — quando possibile — direttamente dalla nostra azienda agricola, o da produttori tipici del territorio.</p>
+        </header>
+
+        <div class="menu-grid">
+          <article class="dish" data-reveal>
+            <div class="dish__img"><img src="assets/images/antipasto-fritti-misti.jpg" loading="lazy" alt="Antipasto di fritti misti — pittule, crocchette di patate e polpette — Agriturismo La Morò"></div>
+            <div class="dish__body">
+              <span class="dish__cat">Antipasti</span>
+              <h3>Fritti misti</h3>
+              <p>Pittule, crocchette di patate, polpette di melanzane e panzerotti, dorati al momento.</p>
+            </div>
+          </article>
+
+          <article class="dish" data-reveal>
+            <div class="dish__img"><img src="assets/images/involtini-brace-rosmarino.jpg" loading="lazy" alt="Involtini e bombette alla brace con rosmarino e limone — Agriturismo La Morò"></div>
+            <div class="dish__body">
+              <span class="dish__cat">Dalla brace</span>
+              <h3>Involtini e bombette</h3>
+              <p>Cotti alla brace, profumati al rosmarino e serviti con limone del nostro Salento.</p>
+            </div>
+          </article>
+
+          <article class="dish" data-reveal>
+            <div class="dish__img"><img src="assets/images/orecchiette-cime-rapa.jpg" loading="lazy" alt="Orecchiette con cime di rapa — Agriturismo La Morò"></div>
+            <div class="dish__body">
+              <span class="dish__cat">Primi piatti</span>
+              <h3>Orecchiette con cime di rapa</h3>
+              <p>Il primo simbolo della Puglia, con le verdure di stagione dei nostri campi.</p>
+            </div>
+          </article>
+
+          <article class="dish" data-reveal>
+            <div class="dish__img"><img src="assets/images/tagliatelle-ceci.jpg" loading="lazy" alt="Tagliatelle con ceci e laganelle croccanti fritte — Agriturismo La Morò"></div>
+            <div class="dish__body">
+              <span class="dish__cat">Primi piatti</span>
+              <h3>Tagliatelle e ceci</h3>
+              <p>Pasta fresca e ceci, con laganelle croccanti fritte a completare il piatto.</p>
+            </div>
+          </article>
+
+          <article class="dish" data-reveal>
+            <div class="dish__img"><img src="assets/images/pollo-brace-limone.jpg" loading="lazy" alt="Pollo alla brace con rosmarino e limone — Agriturismo La Morò"></div>
+            <div class="dish__body">
+              <span class="dish__cat">Secondi &amp; grigliate</span>
+              <h3>Pollo alla brace</h3>
+              <p>Marinato con rosmarino e limone, cotto lentamente sulla brace.</p>
+            </div>
+          </article>
+
+          <article class="dish" data-reveal>
+            <div class="dish__img"><img src="assets/images/grigliata-mista.jpg" loading="lazy" alt="Grigliata mista di carni — bombette, salsicce e costine — Agriturismo La Morò"></div>
+            <div class="dish__body">
+              <span class="dish__cat">Secondi &amp; grigliate</span>
+              <h3>Grigliata mista</h3>
+              <p>Bombette, salsicce e costine: un tripudio di carni alla brace, abbondante e conviviale.</p>
+            </div>
+          </article>
+
+          <article class="dish" data-reveal>
+            <div class="dish__img"><img src="assets/images/parmigiana-melanzane.jpg" loading="lazy" alt="Parmigiana di melanzane con basilico — Agriturismo La Morò"></div>
+            <div class="dish__body">
+              <span class="dish__cat">Il classico</span>
+              <h3>Parmigiana di melanzane</h3>
+              <p>Un intramontabile della nostra tavola, con basilico fresco dell'orto.</p>
+            </div>
+          </article>
+
+          <article class="dish" data-reveal>
+            <div class="dish__img"><img src="assets/images/semifreddo-caffe.jpg" loading="lazy" alt="Semifreddo con cioccolato caldo e caffè — Agriturismo La Morò"></div>
+            <div class="dish__body">
+              <span class="dish__cat">Il dolce</span>
+              <h3>Semifreddo al caffè</h3>
+              <p>Il finale goloso: semifreddo con una cascata di cioccolato caldo.</p>
+            </div>
+          </article>
+        </div>
+
+        <!-- Dietro le quinte -->
+        <div class="backstage" data-reveal>
+          <div class="backstage__img">
+            <img src="assets/images/bombette-preparazione.jpg" loading="lazy" alt="Preparazione delle bombette: carne farcita con formaggio e aromi, prima della cottura — Agriturismo La Morò">
+          </div>
+          <div class="backstage__text">
+            <p class="eyebrow eyebrow--light"><span class="sprig" aria-hidden="true"></span> Dietro le quinte</p>
+            <h3>Il nostro lavoro in cucina</h3>
+            <p>Ogni bombetta è preparata a mano, farcita con formaggio e aromi prima di finire sulla brace. È il gesto lento e paziente che fa la differenza in tavola.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRODOTTI ============ -->
+    <section class="section prodotti" id="prodotti">
+      <div class="prodotti__bg" data-parallax>
+        <img src="assets/images/prodotti-punto-vendita.jpg" loading="lazy" alt="">
+      </div>
+      <div class="prodotti__scrim"></div>
+      <div class="container prodotti__content" data-reveal>
+        <p class="eyebrow eyebrow--light"><span class="sprig" aria-hidden="true"></span> Punto vendita</p>
+        <h2>Dalla terra alla vostra tavola</h2>
+        <p>Accanto al ristorante, l'Agriturismo La Morò propone un punto vendita di prodotti agricoli coltivati direttamente nella nostra azienda. Verdure di stagione, conserve, prodotti tipici: la stessa genuinità che trovate nei nostri piatti, da portare a casa.</p>
+        <div class="prodotti__tags">
+          <span>Verdure di stagione</span>
+          <span>Conserve</span>
+          <span>Prodotti tipici</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ AMBIENTE ============ -->
+    <section class="section ambiente" id="ambiente">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow"><span class="sprig" aria-hidden="true"></span> L'ambiente</p>
+          <h2>Cenare tra gli ulivi</h2>
+          <p class="section-lead">L'Agriturismo La Morò sorge in località Frassanito, nella campagna di Otranto: un ampio giardino tra ulivi secolari, un'atmosfera semplice, familiare, senza pretese. Una sala accogliente per le serate più fresche e un ampio spazio all'aperto nei mesi estivi. I nostri amici a quattro zampe sono i benvenuti.</p>
+        </header>
+
+        <div class="ambiente__mosaic">
+          <figure class="ambiente__cell ambiente__cell--wide" data-reveal>
+            <img src="assets/images/ambiente-lucine-sera.jpg" loading="lazy" alt="Tavoli con tovaglie a quadretti gialli e lucine calde tra gli ulivi, la sera — Agriturismo La Morò">
+            <figcaption>La sera, tra le lucine</figcaption>
+          </figure>
+          <figure class="ambiente__cell ambiente__cell--tall" data-reveal>
+            <img src="assets/images/ambiente-tramonto-ombrelloni.jpg" loading="lazy" alt="Tavoli all'aperto con ombrelloni al tramonto — Agriturismo La Morò">
+            <figcaption>Al tramonto</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTATTI / MAPPA ============ -->
+    <section class="section contatti" id="contatti">
+      <div class="container grid-2 grid-2--map">
+        <div class="contatti__info" data-reveal>
+          <p class="eyebrow"><span class="sprig" aria-hidden="true"></span> Come trovarci</p>
+          <h2>Vi aspettiamo tra gli ulivi</h2>
+          <ul class="info-list">
+            <li><span class="info-ic" aria-hidden="true">📍</span>
+              <span>Località Frassanito — Via Azienda Frassanito<br>73028 Otranto (LE)</span></li>
+            <li><span class="info-ic" aria-hidden="true">🕗</span>
+              <span>Aperti tutte le sere, da giugno a settembre, per la cena</span></li>
+            <li><span class="info-ic" aria-hidden="true">📞</span>
+              <span><a href="tel:+39000000000">+39 000 000 0000</a> <em>(inserire numero reale)</em></span></li>
+            <li><span class="info-ic" aria-hidden="true">🐾</span>
+              <span>Animali ammessi</span></li>
+          </ul>
+          <a class="btn btn--primary" target="_blank" rel="noopener"
+             href="https://www.google.com/maps/search/?api=1&query=Agriturismo+La+Mor%C3%B2+Frassanito+Otranto">
+             Apri in Google Maps
+          </a>
+        </div>
+
+        <div class="contatti__map" data-reveal>
+          <div class="map-container">
+            <iframe
+              src="https://www.google.com/maps?q=Agriturismo+La+Mor%C3%B2+Frassanito+Otranto&output=embed"
+              width="100%" height="450" style="border:0;" allowfullscreen=""
+              loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+              title="Mappa Agriturismo La Morò"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <img src="assets/images/logo.svg" alt="Agriturismo La Morò" class="footer__logo">
+        <p>Cucina salentina genuina e prodotti dell'azienda agricola, tra gli ulivi di Frassanito.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Dove siamo</h4>
+        <p>Località Frassanito<br>73028 Otranto (LE)</p>
+        <p>Aperti tutte le sere<br>da giugno a settembre</p>
+      </div>
+      <div class="footer__col">
+        <h4>Seguici</h4>
+        <ul class="footer__social">
+          <li><a href="#" rel="noopener">Instagram</a></li>
+          <li><a href="#" rel="noopener">Facebook</a></li>
+          <li><a href="#" rel="noopener">TheFork</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bar">
+      <div class="container">
+        <p>© <span id="year"></span> Agriturismo La Morò — Frassanito, Otranto (LE). Tutti i diritti riservati.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
