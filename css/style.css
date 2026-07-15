@@ -118,8 +118,10 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 .intro {
   position: fixed; inset: 0; z-index: 1000;
   display: grid; place-items: center;
+  /* cream ground: the full-colour logo (olive + brown + black olive) reads
+     with the best contrast on a light background, as designed */
   background:
-    radial-gradient(120% 120% at 50% 30%, #6c7a36 0%, #414c22 55%, #2b3320 100%);
+    radial-gradient(120% 120% at 50% 38%, #fdfaf2 0%, #f3ecdb 58%, #e7ddc6 100%);
   transition: opacity .8s var(--ease), visibility .8s;
 }
 .intro__inner { padding: 0 8vw; }
@@ -127,8 +129,8 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
   width: min(70vw, 560px); height: auto;
   max-width: 100%;
   object-fit: contain;
-  /* soft light halo lifts the dark logo elements off the olive background */
-  filter: drop-shadow(0 0 22px rgba(250,246,236,.55)) drop-shadow(0 10px 26px rgba(0,0,0,.4));
+  /* soft warm shadow for depth on the cream ground */
+  filter: drop-shadow(0 12px 28px rgba(65,76,34,.18));
   opacity: 0; transform: scale(.9);
   animation: introLogoIn 1.2s var(--ease) .2s forwards;
 }
@@ -138,15 +140,15 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 }
 .intro__skip {
   position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%);
-  background: rgba(255,255,255,.12); color: #fff;
-  border: 1px solid rgba(255,255,255,.4);
+  background: rgba(94,107,46,.10); color: var(--olive-deep);
+  border: 1px solid rgba(94,107,46,.45);
   padding: .55em 1.4em; border-radius: 999px;
-  font-family: var(--body-font); font-size: .9rem; letter-spacing: .08em;
+  font-family: var(--body-font); font-size: .9rem; letter-spacing: .08em; font-weight: 600;
   cursor: pointer; opacity: 0;
   animation: fadeIn .6s ease 1.4s forwards;
-  transition: background .3s;
+  transition: background .3s, color .3s;
 }
-.intro__skip:hover { background: rgba(255,255,255,.24); }
+.intro__skip:hover { background: var(--olive-deep); color: var(--cream); }
 @keyframes fadeIn { to { opacity: 1; } }
 
 body.intro-done .intro { opacity: 0; visibility: hidden; pointer-events: none; }
