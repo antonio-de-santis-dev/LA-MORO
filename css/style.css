@@ -32,6 +32,10 @@
   --maxw: 1200px;
   --gutter: clamp(20px, 5vw, 64px);
   --ease: cubic-bezier(.22,.61,.36,1);
+
+  /* single source of truth for the brand logo size — shared by the hero
+     logo (#hero <h1>) and the intro logo (#intro) so they never diverge */
+  --logo-hero-width: clamp(300px, 88vw, 820px);
 }
 
 /* ---------- Reset & base ---------- */
@@ -124,12 +128,15 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
     radial-gradient(120% 120% at 50% 38%, #fdfaf2 0%, #f3ecdb 58%, #e7ddc6 100%);
   transition: opacity .8s var(--ease), visibility .8s;
 }
-.intro__inner { padding: 0 8vw; }
+/* same horizontal gutter as .container so the intro logo's max width
+   matches the hero logo's exactly at every viewport */
+.intro__inner { padding: 0 var(--gutter); width: 100%; display: flex; justify-content: center; }
 .intro__logo {
-  width: min(70vw, 560px); height: auto;
+  width: var(--logo-hero-width); height: auto;
   max-width: 100%;
   object-fit: contain;
-  /* soft warm shadow for depth on the cream ground */
+  /* light green ground: the logo already reads well here, so only a soft
+     warm shadow for depth — deliberately gentler than the hero glow */
   filter: drop-shadow(0 12px 28px rgba(65,76,34,.18));
   opacity: 0; transform: scale(.9);
   animation: introLogoIn 1.2s var(--ease) .2s forwards;

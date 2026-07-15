@@ -33,6 +33,35 @@
     document.body.classList.add('intro-done');
   }
 
+  /* ---------- ALIGN INTRO LOGO OVER HERO LOGO ---------- */
+  // Pin the intro logo to the exact on-screen rect of the hero logo so that,
+  // when the intro fades into the hero, the logo does not jump or resize.
+  // The hero logo is flow-centred (its offset from the viewport centre varies
+  // with viewport width and text wrapping), so we match its measured rect
+  // rather than guessing a constant offset.
+  var introLogo = document.getElementById('introLogo');
+  var heroLogo = document.querySelector('.hero__title--logo img');
+
+  function alignIntroLogo() {
+    if (introDone || !introLogo || !heroLogo) return;
+    var r = heroLogo.getBoundingClientRect();
+    if (!r.width) return;
+    introLogo.style.position = 'fixed';
+    introLogo.style.top = r.top + 'px';
+    introLogo.style.left = r.left + 'px';
+    introLogo.style.width = r.width + 'px';
+    introLogo.style.height = 'auto';
+    introLogo.style.margin = '0';
+  }
+
+  if (introLogo && heroLogo) {
+    alignIntroLogo();
+    window.addEventListener('load', alignIntroLogo);
+    window.addEventListener('resize', alignIntroLogo, { passive: true });
+    // re-align once webfonts settle (they change the eyebrow height above the logo)
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(alignIntroLogo);
+  }
+
   /* ---------- HEADER SCROLL STATE ---------- */
   var header = document.getElementById('siteHeader');
   var hero = document.getElementById('hero');
