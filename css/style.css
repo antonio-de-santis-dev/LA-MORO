@@ -224,6 +224,14 @@ body:not(.intro-done) { overflow: hidden; }
   text-shadow: 0 6px 30px rgba(0,0,0,.4);
   opacity: 0; animation: heroUp 1s var(--ease) .25s forwards;
 }
+/* logo as H1: keep the H1 for SEO/a11y, show the brand mark instead of text */
+.hero__title--logo { text-shadow: none; margin-inline: auto; }
+.hero__title--logo img {
+  display: block; margin-inline: auto;
+  width: min(80vw, 620px); height: auto; max-width: 100%;
+  /* light halo + dark shadow so the multi-colour logo reads on the dark photo */
+  filter: drop-shadow(0 0 24px rgba(250,246,236,.5)) drop-shadow(0 4px 16px rgba(0,0,0,.6)) brightness(1.06);
+}
 .hero__subtitle {
   font-family: var(--display-font); font-size: clamp(1.25rem, 3vw, 1.9rem);
   font-style: italic; color: #f2eede; margin-top: 1rem;
