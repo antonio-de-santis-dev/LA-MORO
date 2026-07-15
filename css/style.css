@@ -157,8 +157,18 @@ body:not(.intro-done) { overflow: hidden; }
    ===================================================================== */
 .site-header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 900;
-  transition: background .4s var(--ease), box-shadow .4s, padding .4s;
+  transition: background .4s var(--ease), box-shadow .4s, padding .4s,
+              transform .4s var(--ease), opacity .4s var(--ease), visibility 0s linear 0s;
   padding-block: 18px;
+}
+/* hidden while the hero is on screen — removed from tab order & screen readers */
+.site-header.header--hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: background .4s var(--ease), box-shadow .4s, padding .4s,
+              transform .4s var(--ease), opacity .4s var(--ease), visibility 0s linear .4s;
 }
 .site-header.scrolled {
   background: rgba(250,246,236,.92);
