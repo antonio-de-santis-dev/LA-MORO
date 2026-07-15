@@ -186,10 +186,17 @@ body:not(.intro-done) { overflow: hidden; }
   padding-block: 10px;
 }
 .header__row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.brand { display: inline-flex; align-items: center; }
-.brand__logo { height: 46px; width: auto; transition: height .4s var(--ease), filter .4s; filter: drop-shadow(0 2px 8px rgba(0,0,0,.35)); }
+.brand { display: inline-flex; align-items: center; min-width: 0; position: relative; z-index: 20; }
+/* single horizontal wordmark (Logo.png). Sized to sit in the bar without
+   dominating it; width auto keeps the original 867x288 ratio (never squashed) */
+.brand__logo {
+  height: 44px; width: auto; max-width: 60vw; object-fit: contain; display: block;
+  transition: height .4s var(--ease), filter .4s;
+  /* dark lettering: a soft lift for the (rare) transparent-over-photo moment */
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.5));
+}
+/* scrolled = cream background: lettering reads on its own, drop the shadow */
 .site-header.scrolled .brand__logo { height: 40px; filter: none; }
-.brand__mark { display: none; height: 40px; width: auto; }
 
 /* nav */
 .nav__menu { list-style: none; display: flex; align-items: center; gap: clamp(14px, 2vw, 30px); }
@@ -448,8 +455,9 @@ body:not(.intro-done) { overflow: hidden; }
   .nav__toggle.active span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
   .nav__toggle.active span { background: var(--brown-deep) !important; }
 
-  .brand__logo { display: none; }
-  .brand__mark { display: block; }
+  /* keep the wordmark on mobile, just smaller, and cap its width so it
+     always leaves room for the hamburger (no overlap/squash) */
+  .brand__logo { height: 38px; max-width: 58vw; }
 
   .grid-2 { grid-template-columns: 1fr; }
   .backstage { grid-template-columns: 1fr; }
