@@ -248,18 +248,28 @@ body:not(.intro-done) { overflow: hidden; }
 .hero__title--logo { text-shadow: none; margin-inline: auto; }
 .hero__title--logo img {
   display: block; margin-inline: auto;
-  width: min(80vw, 620px); height: auto; max-width: 100%;
-  /* light halo + dark shadow so the multi-colour logo reads on the dark photo */
-  filter: drop-shadow(0 0 26px rgba(250,246,236,.55)) drop-shadow(0 6px 20px rgba(0,0,0,.7)) brightness(1.08);
+  width: clamp(300px, 88vw, 820px); height: auto; max-width: 100%;
+  /* strong dark shadows carve a dark "moat" around the logo so it lifts off
+     the busy photo; brightness/saturate separates the greens from the foliage */
+  filter:
+    drop-shadow(0 4px 16px rgba(0,0,0,.82))
+    drop-shadow(0 0 30px rgba(0,0,0,.58))
+    brightness(1.1) saturate(1.14);
 }
 .hero__subtitle {
-  font-family: var(--display-font); font-size: clamp(1.25rem, 3vw, 1.9rem);
-  font-style: italic; color: #f2eede; margin-top: 1rem;
-  text-shadow: 0 3px 18px rgba(0,0,0,.4);
+  font-family: var(--display-font); font-size: clamp(1.3rem, 3vw, 2rem);
+  font-style: italic; color: #f2eede; margin-top: clamp(1rem, 2vw, 1.6rem);
+  text-shadow: 0 3px 18px rgba(0,0,0,.55);
   opacity: 0; animation: heroUp 1s var(--ease) .4s forwards;
 }
-.hero__actions { margin-top: 2.4rem; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+.hero__actions { margin-top: clamp(1.9rem, 3.4vw, 2.9rem); display: flex; gap: clamp(14px, 1.6vw, 20px); justify-content: center; flex-wrap: wrap;
   opacity: 0; animation: heroUp 1s var(--ease) .55s forwards; }
+/* larger buttons — scoped to the hero only, global .btn untouched */
+.hero__actions .btn {
+  padding: clamp(.95em, 1.3vw, 1.15em) clamp(1.7em, 2.4vw, 2.25em);
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  min-height: 48px;
+}
 @keyframes heroUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
 
 .hero__scroll {
