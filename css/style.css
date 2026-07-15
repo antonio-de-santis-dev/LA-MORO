@@ -223,8 +223,8 @@ body:not(.intro-done) { overflow: hidden; }
   /* photo is brighter and busier than the original: reinforce the veil,
      plus a soft central darkening to keep the logo and text legible */
   background:
-    radial-gradient(120% 85% at 50% 42%, rgba(27,28,18,.30) 0%, rgba(27,28,18,0) 60%),
-    linear-gradient(180deg, rgba(27,28,18,.62) 0%, rgba(27,28,18,.38) 42%, rgba(27,28,18,.66) 100%);
+    radial-gradient(115% 75% at 50% 50%, rgba(27,28,18,.46) 0%, rgba(27,28,18,0) 60%),
+    linear-gradient(180deg, rgba(27,28,18,.64) 0%, rgba(27,28,18,.42) 45%, rgba(27,28,18,.68) 100%);
 }
 .hero__content { position: relative; z-index: 2; text-align: center; color: var(--cream); padding-top: 80px; }
 .hero__eyebrow {
@@ -243,7 +243,7 @@ body:not(.intro-done) { overflow: hidden; }
   display: block; margin-inline: auto;
   width: min(80vw, 620px); height: auto; max-width: 100%;
   /* light halo + dark shadow so the multi-colour logo reads on the dark photo */
-  filter: drop-shadow(0 0 24px rgba(250,246,236,.5)) drop-shadow(0 4px 16px rgba(0,0,0,.6)) brightness(1.06);
+  filter: drop-shadow(0 0 26px rgba(250,246,236,.55)) drop-shadow(0 6px 20px rgba(0,0,0,.7)) brightness(1.08);
 }
 .hero__subtitle {
   font-family: var(--display-font); font-size: clamp(1.25rem, 3vw, 1.9rem);
