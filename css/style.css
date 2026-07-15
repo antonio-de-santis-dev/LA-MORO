@@ -221,9 +221,10 @@ body:not(.intro-done) { overflow: hidden; }
 .nav__cta:hover { background: var(--olive); }
 
 .nav__toggle {
-  display: none; flex-direction: column; gap: 5px;
+  display: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
   background: none; border: 0; cursor: pointer; padding: 8px;
-  z-index: 20;
+  min-width: 44px; min-height: 44px;  /* touch target */
+  position: relative; z-index: 20;  /* position needed for z-index to apply (sits above the open drawer) */
 }
 .nav__toggle span { width: 26px; height: 2.5px; background: var(--cream); border-radius: 2px; transition: .3s var(--ease); box-shadow: 0 1px 3px rgba(0,0,0,.4); }
 .site-header.scrolled .nav__toggle span { background: var(--brown-deep); box-shadow: none; }
@@ -440,11 +441,16 @@ body:not(.intro-done) { overflow: hidden; }
 @media (max-width: 860px) {
   .nav__toggle { display: flex; }
   .nav__menu {
-    position: fixed; inset: 0 0 0 auto; width: min(320px, 82vw);
+    position: fixed; top: 0; right: 0; left: auto; bottom: auto;
+    width: min(320px, 82vw); height: 100vh; height: 100dvh;
+    /* explicit full-viewport height: the scrolled header's backdrop-filter
+       makes it a containing block, so bottom:0 alone would only reach the
+       header's height — 100dvh keeps the drawer full-height regardless */
     flex-direction: column; align-items: flex-start; justify-content: center;
     gap: 28px; padding: 40px;
     background: var(--cream); box-shadow: -20px 0 60px rgba(0,0,0,.25);
     transform: translateX(100%); transition: transform .4s var(--ease);
+    z-index: 10;
   }
   .nav__menu.open { transform: translateX(0); }
   .nav__menu a { color: var(--brown-deep) !important; text-shadow: none; font-size: 1.2rem; }
