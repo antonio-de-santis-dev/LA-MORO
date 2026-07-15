@@ -252,16 +252,37 @@ body:not(.intro-done) { overflow: hidden; }
   opacity: 0; animation: heroUp 1s var(--ease) .25s forwards;
 }
 /* logo as H1: keep the H1 for SEO/a11y, show the brand mark instead of text */
-.hero__title--logo { text-shadow: none; margin-inline: auto; }
+.hero__title--logo {
+  position: relative;
+  width: fit-content; max-width: 100%;
+  margin-inline: auto;
+  text-shadow: none;
+  isolation: isolate;
+}
+/* soft, warm, diffuse light behind the logo — like the garden's warm string
+   lights filtering through. No hard edge, no recognisable shape, no card. */
+.hero__title--logo::before {
+  content: "";
+  position: absolute; z-index: 0; pointer-events: none;
+  left: 50%; top: 52%; transform: translate(-50%, -50%);
+  width: 122%; height: 185%;
+  background: radial-gradient(ellipse at center,
+    rgba(255,233,193,.34) 0%,
+    rgba(252,223,174,.19) 36%,
+    rgba(250,219,168,.06) 60%,
+    rgba(250,219,168,0) 78%);
+  filter: blur(36px);
+}
 .hero__title--logo img {
+  position: relative; z-index: 1;
   display: block; margin-inline: auto;
-  width: clamp(300px, 88vw, 820px); height: auto; max-width: 100%;
-  /* strong dark shadows carve a dark "moat" around the logo so it lifts off
-     the busy photo; brightness/saturate separates the greens from the foliage */
+  width: var(--logo-hero-width); height: auto; max-width: 100%;
+  /* keep a restrained dark shadow for edge definition; the warm glow above
+     does the heavy lifting for legibility */
   filter:
-    drop-shadow(0 4px 16px rgba(0,0,0,.82))
-    drop-shadow(0 0 30px rgba(0,0,0,.58))
-    brightness(1.1) saturate(1.14);
+    drop-shadow(0 3px 14px rgba(0,0,0,.7))
+    drop-shadow(0 0 26px rgba(0,0,0,.42))
+    brightness(1.08) saturate(1.12);
 }
 .hero__subtitle {
   font-family: var(--display-font); font-size: clamp(1.3rem, 3vw, 2rem);
