@@ -124,13 +124,14 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 }
 .intro__inner { padding: 0 8vw; }
 .intro__logo {
-  width: min(560px, 78vw); height: auto;
-  filter: brightness(0) invert(1) drop-shadow(0 6px 20px rgba(0,0,0,.35));
+  width: min(70vw, 560px); height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  /* soft light halo lifts the dark logo elements off the olive background */
+  filter: drop-shadow(0 0 22px rgba(250,246,236,.55)) drop-shadow(0 10px 26px rgba(0,0,0,.4));
   opacity: 0; transform: scale(.9);
   animation: introLogoIn 1.2s var(--ease) .2s forwards;
 }
-/* keep the real logo colours instead of white silhouette */
-.intro__logo { filter: drop-shadow(0 10px 26px rgba(0,0,0,.45)); }
 @keyframes introLogoIn {
   0%   { opacity: 0; transform: scale(.9) translateY(8px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
