@@ -5,6 +5,20 @@
 (function () {
   'use strict';
 
+  /* ---------- ALWAYS START THE VISIT AT THE TOP (full intro) ----------
+     Reloading must always show the intro with the centred logo from the top
+     of the page — never mid-page behind the intro. So:
+     1) disable the browser's automatic scroll restoration,
+     2) strip any URL hash (else the browser jumps to that section on load),
+     3) force the scroll position to the top.
+     Done as early as possible, before the intro is shown or measured. */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (window.location.hash) {
+    // remove the hash without navigating, so no anchor jump happens
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+  window.scrollTo(0, 0);
+
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- INTRO / PRELOADER ---------- */
@@ -23,6 +37,12 @@
   }
 
   if (intro) {
+    // While the intro is on screen, keep the page pinned to the top even if the
+    // browser tries to restore scroll on the load event.
+    var pinTop = function () { if (!introDone) window.scrollTo(0, 0); };
+    window.addEventListener('load', pinTop);
+    window.addEventListener('scroll', pinTop, { passive: true });
+
     var hold = reduceMotion ? 400 : 2200;
     window.setTimeout(endIntro, hold);
     intro.addEventListener('click', endIntro);
