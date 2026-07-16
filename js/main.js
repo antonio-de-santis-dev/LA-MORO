@@ -5,6 +5,20 @@
 (function () {
   'use strict';
 
+  /* ---------- ALWAYS START THE VISIT AT THE TOP (full intro) ----------
+     Reloading must always show the intro with the centred logo from the top
+     of the page — never mid-page behind the intro. So:
+     1) disable the browser's automatic scroll restoration,
+     2) strip any URL hash (else the browser jumps to that section on load),
+     3) force the scroll position to the top.
+     Done as early as possible, before the intro is shown or measured. */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (window.location.hash) {
+    // remove the hash without navigating, so no anchor jump happens
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+  window.scrollTo(0, 0);
+
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- INTRO / PRELOADER ---------- */
@@ -23,6 +37,12 @@
   }
 
   if (intro) {
+    // While the intro is on screen, keep the page pinned to the top even if the
+    // browser tries to restore scroll on the load event.
+    var pinTop = function () { if (!introDone) window.scrollTo(0, 0); };
+    window.addEventListener('load', pinTop);
+    window.addEventListener('scroll', pinTop, { passive: true });
+
     var hold = reduceMotion ? 400 : 2200;
     window.setTimeout(endIntro, hold);
     intro.addEventListener('click', endIntro);
@@ -171,6 +191,59 @@
   } else {
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
   }
+
+  /* ---------- DISHES CAROUSEL ---------- */
+  (function initDishCarousel() {
+    var track = document.getElementById('dishTrack');
+    if (!track) return;
+    var prev = document.querySelector('.dish-carousel__arrow--prev');
+    var next = document.querySelector('.dish-carousel__arrow--next');
+
+    function step() {
+      var card = track.querySelector('.dish');
+      var gap = parseFloat(getComputedStyle(track).gap) || 20;
+      return card ? card.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
+    }
+    function go(dir) {
+      track.scrollBy({ left: dir * step(), behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+    if (prev) prev.addEventListener('click', function () { go(-1); });
+    if (next) next.addEventListener('click', function () { go(1); });
+
+    // enable/disable arrows at the ends
+    function updateArrows() {
+      if (!prev || !next) return;
+      var max = track.scrollWidth - track.clientWidth - 2;
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= max;
+    }
+    track.addEventListener('scroll', updateArrows, { passive: true });
+    window.addEventListener('resize', updateArrows, { passive: true });
+    updateArrows();
+
+    // drag-to-scroll with the mouse (touch uses native scrolling)
+    var down = false, startX = 0, startScroll = 0, moved = false;
+    track.addEventListener('pointerdown', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      down = true; moved = false; startX = e.clientX; startScroll = track.scrollLeft;
+      track.classList.add('is-dragging');
+      try { track.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    track.addEventListener('pointermove', function (e) {
+      if (!down) return;
+      var dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) moved = true;
+      track.scrollLeft = startScroll - dx;
+    });
+    function up() { if (!down) return; down = false; track.classList.remove('is-dragging'); }
+    track.addEventListener('pointerup', up);
+    track.addEventListener('pointercancel', up);
+    track.addEventListener('pointerleave', up);
+    // swallow the click that ends a drag so a card isn't accidentally activated
+    track.addEventListener('click', function (e) {
+      if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+  })();
 
   /* ---------- FOOTER YEAR ---------- */
   var yearEl = document.getElementById('year');
