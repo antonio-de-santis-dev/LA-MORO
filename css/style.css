@@ -71,14 +71,15 @@ strong { color: var(--olive-deep); font-weight: 700; }
 .eyebrow {
   font-family: var(--body-font);
   text-transform: uppercase;
-  letter-spacing: .22em;
-  font-size: .78rem;
-  font-weight: 700;
-  color: var(--olive-deep);
+  letter-spacing: clamp(.24em, .5vw, .32em);
+  font-size: clamp(.9rem, 1.5vw, 1.1rem);
+  font-weight: 800;
+  color: var(--olive-dark); /* #414c22 — stronger contrast on cream (>8:1) */
   display: inline-flex; align-items: center; gap: .6em;
-  margin-bottom: 1rem;
+  margin-bottom: 1.1rem;
 }
-.eyebrow--light { color: #dfe6c0; }
+/* on dark backgrounds ("Dietro le quinte"): keep it light for contrast */
+.eyebrow--light { color: #e7edcb; }
 .sprig {
   width: 34px; height: 12px; display: inline-block;
   background: no-repeat center/contain
@@ -311,11 +312,19 @@ body:not(.intro-done) { overflow: hidden; }
 }
 @keyframes heroUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
 
-.hero__scroll {
-  position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 2;
-  width: 26px; height: 42px; border: 2px solid rgba(255,255,255,.7); border-radius: 14px;
+/* the cream of the next section (#chi-siamo) emerges softly at the hero foot,
+   fading up over the dark photo — a peek that invites scrolling, no hard edge */
+.hero__peek {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  height: clamp(80px, 13vh, 140px);
+  background: linear-gradient(to bottom, rgba(250,246,236,0) 0%, rgba(250,246,236,.55) 55%, var(--cream) 100%);
+  pointer-events: none;
 }
-.hero__scroll span { position: absolute; top: 8px; left: 50%; width: 4px; height: 8px; background: #fff; border-radius: 2px; transform: translateX(-50%); animation: scrollDot 1.6s infinite; }
+.hero__scroll {
+  position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3;
+  width: 26px; height: 42px; border: 2px solid rgba(94,107,46,.7); border-radius: 14px;
+}
+.hero__scroll span { position: absolute; top: 8px; left: 50%; width: 4px; height: 8px; background: var(--olive-deep); border-radius: 2px; transform: translateX(-50%); animation: scrollDot 1.6s infinite; }
 @keyframes scrollDot { 0%{opacity:0;transform:translate(-50%,0)} 40%{opacity:1} 80%{opacity:0;transform:translate(-50%,12px)} 100%{opacity:0} }
 
 /* =====================================================================
@@ -323,10 +332,10 @@ body:not(.intro-done) { overflow: hidden; }
    ===================================================================== */
 .chi-siamo { background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%); }
 .chi-siamo__media { position: relative; }
-.chi-siamo__media img { width: 100%; height: 100%; max-height: 560px; object-fit: cover; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+.chi-siamo__media img { width: 100%; height: 100%; max-height: 560px; object-fit: cover; object-position: center 42%; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
 .media-frame { position: absolute; inset: 16px -16px -16px 16px; border: 2px solid var(--olive); border-radius: var(--radius-lg); z-index: -1; }
 .chi-siamo__text h2 { margin-bottom: 1.1rem; }
-.chi-siamo__text p { margin-bottom: 1rem; color: #4a4736; }
+.chi-siamo__text p:not(.eyebrow) { margin-bottom: 1rem; color: #4a4736; }
 .pill-list { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.6rem; }
 .pill-list li {
   font-size: .86rem; font-weight: 600; letter-spacing: .02em;
@@ -366,7 +375,7 @@ body:not(.intro-done) { overflow: hidden; }
 .backstage__img img { width: 100%; height: 100%; object-fit: cover; }
 .backstage__text { padding: clamp(28px, 4vw, 56px); color: var(--cream); align-self: center; }
 .backstage__text h3 { color: #fff; font-size: clamp(1.5rem, 3vw, 2.1rem); margin-bottom: .8rem; }
-.backstage__text p { color: #d8d5c2; }
+.backstage__text p:not(.eyebrow) { color: #d8d5c2; }
 
 /* =====================================================================
    PRODOTTI
@@ -377,7 +386,7 @@ body:not(.intro-done) { overflow: hidden; }
 .prodotti__scrim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(27,28,18,.82) 0%, rgba(27,28,18,.55) 55%, rgba(27,28,18,.35) 100%); }
 .prodotti__content { position: relative; z-index: 2; color: var(--cream); max-width: 620px; }
 .prodotti__content h2 { color: #fff; }
-.prodotti__content p { margin-top: 1rem; color: #ece9da; }
+.prodotti__content p:not(.eyebrow) { margin-top: 1rem; color: #ece9da; }
 .prodotti__tags { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 1.8rem; }
 .prodotti__tags span { border: 1px solid rgba(255,255,255,.4); color: #fff; padding: .5em 1.1em; border-radius: 999px; font-size: .88rem; font-weight: 600; }
 
