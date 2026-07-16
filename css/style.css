@@ -32,6 +32,10 @@
   --maxw: 1200px;
   --gutter: clamp(20px, 5vw, 64px);
   --ease: cubic-bezier(.22,.61,.36,1);
+
+  /* single source of truth for the brand logo size — shared by the hero
+     logo (#hero <h1>) and the intro logo (#intro) so they never diverge */
+  --logo-hero-width: clamp(300px, 88vw, 820px);
 }
 
 /* ---------- Reset & base ---------- */
@@ -118,34 +122,40 @@ h2 { font-size: clamp(1.9rem, 4vw, 3rem); }
 .intro {
   position: fixed; inset: 0; z-index: 1000;
   display: grid; place-items: center;
+  /* cream ground: the full-colour logo (olive + brown + black olive) reads
+     with the best contrast on a light background, as designed */
   background:
-    radial-gradient(120% 120% at 50% 30%, #6c7a36 0%, #414c22 55%, #2b3320 100%);
+    radial-gradient(120% 120% at 50% 38%, #fdfaf2 0%, #f3ecdb 58%, #e7ddc6 100%);
   transition: opacity .8s var(--ease), visibility .8s;
 }
-.intro__inner { padding: 0 8vw; }
+/* same horizontal gutter as .container so the intro logo's max width
+   matches the hero logo's exactly at every viewport */
+.intro__inner { padding: 0 var(--gutter); width: 100%; display: flex; justify-content: center; }
 .intro__logo {
-  width: min(560px, 78vw); height: auto;
-  filter: brightness(0) invert(1) drop-shadow(0 6px 20px rgba(0,0,0,.35));
+  width: var(--logo-hero-width); height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  /* light green ground: the logo already reads well here, so only a soft
+     warm shadow for depth — deliberately gentler than the hero glow */
+  filter: drop-shadow(0 12px 28px rgba(65,76,34,.18));
   opacity: 0; transform: scale(.9);
   animation: introLogoIn 1.2s var(--ease) .2s forwards;
 }
-/* keep the real logo colours instead of white silhouette */
-.intro__logo { filter: drop-shadow(0 10px 26px rgba(0,0,0,.45)); }
 @keyframes introLogoIn {
   0%   { opacity: 0; transform: scale(.9) translateY(8px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 .intro__skip {
   position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%);
-  background: rgba(255,255,255,.12); color: #fff;
-  border: 1px solid rgba(255,255,255,.4);
+  background: rgba(94,107,46,.10); color: var(--olive-deep);
+  border: 1px solid rgba(94,107,46,.45);
   padding: .55em 1.4em; border-radius: 999px;
-  font-family: var(--body-font); font-size: .9rem; letter-spacing: .08em;
+  font-family: var(--body-font); font-size: .9rem; letter-spacing: .08em; font-weight: 600;
   cursor: pointer; opacity: 0;
   animation: fadeIn .6s ease 1.4s forwards;
-  transition: background .3s;
+  transition: background .3s, color .3s;
 }
-.intro__skip:hover { background: rgba(255,255,255,.24); }
+.intro__skip:hover { background: var(--olive-deep); color: var(--cream); }
 @keyframes fadeIn { to { opacity: 1; } }
 
 body.intro-done .intro { opacity: 0; visibility: hidden; pointer-events: none; }
@@ -156,8 +166,18 @@ body:not(.intro-done) { overflow: hidden; }
    ===================================================================== */
 .site-header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 900;
-  transition: background .4s var(--ease), box-shadow .4s, padding .4s;
+  transition: background .4s var(--ease), box-shadow .4s, padding .4s,
+              transform .4s var(--ease), opacity .4s var(--ease), visibility 0s linear 0s;
   padding-block: 18px;
+}
+/* hidden while the hero is on screen — removed from tab order & screen readers */
+.site-header.header--hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: background .4s var(--ease), box-shadow .4s, padding .4s,
+              transform .4s var(--ease), opacity .4s var(--ease), visibility 0s linear .4s;
 }
 .site-header.scrolled {
   background: rgba(250,246,236,.92);
@@ -166,10 +186,20 @@ body:not(.intro-done) { overflow: hidden; }
   padding-block: 10px;
 }
 .header__row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.brand { display: inline-flex; align-items: center; }
-.brand__logo { height: 46px; width: auto; transition: height .4s var(--ease), filter .4s; filter: drop-shadow(0 2px 8px rgba(0,0,0,.35)); }
+.brand { display: inline-flex; align-items: center; min-width: 0; position: relative; z-index: 20; }
+/* single horizontal wordmark (Logo.png). Sized to sit in the bar without
+   dominating it; width auto keeps the original 867x288 ratio (never squashed) */
+.brand__logo {
+  height: 44px; width: auto; max-width: 60vw; object-fit: contain; display: block;
+  transition: height .4s var(--ease), filter .4s;
+  /* dark lettering: a soft lift for the (rare) transparent-over-photo moment */
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.5));
+}
+/* scrolled = cream background: lettering reads on its own, drop the shadow */
 .site-header.scrolled .brand__logo { height: 40px; filter: none; }
-.brand__mark { display: none; height: 40px; width: auto; }
+/* compact square mark (olive + branch) — shown only on mobile (see media query) */
+.brand__mark { display: none; height: 38px; width: auto; }
+.site-header:not(.scrolled) .brand__mark { filter: drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
 
 /* nav */
 .nav__menu { list-style: none; display: flex; align-items: center; gap: clamp(14px, 2vw, 30px); }
@@ -194,9 +224,10 @@ body:not(.intro-done) { overflow: hidden; }
 .nav__cta:hover { background: var(--olive); }
 
 .nav__toggle {
-  display: none; flex-direction: column; gap: 5px;
+  display: none; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
   background: none; border: 0; cursor: pointer; padding: 8px;
-  z-index: 20;
+  min-width: 44px; min-height: 44px;  /* touch target */
+  position: relative; z-index: 20;  /* position needed for z-index to apply (sits above the open drawer) */
 }
 .nav__toggle span { width: 26px; height: 2.5px; background: var(--cream); border-radius: 2px; transition: .3s var(--ease); box-shadow: 0 1px 3px rgba(0,0,0,.4); }
 .site-header.scrolled .nav__toggle span { background: var(--brown-deep); box-shadow: none; }
@@ -206,16 +237,24 @@ body:not(.intro-done) { overflow: hidden; }
    ===================================================================== */
 .hero { position: relative; min-height: 100svh; display: grid; align-items: center; overflow: hidden; z-index: 2; }
 .hero__bg { position: absolute; inset: -8% 0; z-index: 0; will-change: transform; }
-.hero__bg img { width: 100%; height: 100%; object-fit: cover; }
+.hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 45%; }
 .hero__scrim {
   position: absolute; inset: 0; z-index: 1;
+  /* photo is brighter and busier than the original: reinforce the veil,
+     plus a soft central darkening to keep the logo and text legible */
   background:
-    linear-gradient(180deg, rgba(27,28,18,.55) 0%, rgba(27,28,18,.20) 35%, rgba(27,28,18,.55) 100%);
+    radial-gradient(ellipse 82% 62% at 50% 52%, rgba(0,0,0,.64) 0%, rgba(0,0,0,.44) 45%, rgba(0,0,0,.16) 100%),
+    linear-gradient(180deg, rgba(27,28,18,.56) 0%, rgba(27,28,18,.32) 45%, rgba(27,28,18,.62) 100%);
 }
 .hero__content { position: relative; z-index: 2; text-align: center; color: var(--cream); padding-top: 80px; }
 .hero__eyebrow {
-  text-transform: uppercase; letter-spacing: .35em; font-size: .82rem; font-weight: 600;
-  color: #eef0dc; margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: clamp(.3em, .6vw, .46em);
+  font-size: clamp(.9rem, 1.6vw, 1.15rem);
+  font-weight: 700;
+  color: var(--cream);
+  text-shadow: 0 2px 10px rgba(0,0,0,.7);
+  margin-bottom: clamp(1.3rem, 2.6vw, 2rem);
   opacity: 0; animation: heroUp .9s var(--ease) .1s forwards;
 }
 .hero__title {
@@ -223,14 +262,53 @@ body:not(.intro-done) { overflow: hidden; }
   text-shadow: 0 6px 30px rgba(0,0,0,.4);
   opacity: 0; animation: heroUp 1s var(--ease) .25s forwards;
 }
+/* logo as H1: keep the H1 for SEO/a11y, show the brand mark instead of text */
+.hero__title--logo {
+  position: relative;
+  width: fit-content; max-width: 100%;
+  margin-inline: auto;
+  text-shadow: none;
+  isolation: isolate;
+}
+/* soft, warm, diffuse light behind the logo — like the garden's warm string
+   lights filtering through. No hard edge, no recognisable shape, no card. */
+.hero__title--logo::before {
+  content: "";
+  position: absolute; z-index: 0; pointer-events: none;
+  left: 50%; top: 52%; transform: translate(-50%, -50%);
+  width: 122%; height: 185%;
+  background: radial-gradient(ellipse at center,
+    rgba(255,233,193,.34) 0%,
+    rgba(252,223,174,.19) 36%,
+    rgba(250,219,168,.06) 60%,
+    rgba(250,219,168,0) 78%);
+  filter: blur(36px);
+}
+.hero__title--logo img {
+  position: relative; z-index: 1;
+  display: block; margin-inline: auto;
+  width: var(--logo-hero-width); height: auto; max-width: 100%;
+  /* keep a restrained dark shadow for edge definition; the warm glow above
+     does the heavy lifting for legibility */
+  filter:
+    drop-shadow(0 3px 14px rgba(0,0,0,.7))
+    drop-shadow(0 0 26px rgba(0,0,0,.42))
+    brightness(1.08) saturate(1.12);
+}
 .hero__subtitle {
-  font-family: var(--display-font); font-size: clamp(1.25rem, 3vw, 1.9rem);
-  font-style: italic; color: #f2eede; margin-top: 1rem;
-  text-shadow: 0 3px 18px rgba(0,0,0,.4);
+  font-family: var(--display-font); font-size: clamp(1.3rem, 3vw, 2rem);
+  font-style: italic; color: #f2eede; margin-top: clamp(1rem, 2vw, 1.6rem);
+  text-shadow: 0 3px 18px rgba(0,0,0,.55);
   opacity: 0; animation: heroUp 1s var(--ease) .4s forwards;
 }
-.hero__actions { margin-top: 2.4rem; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+.hero__actions { margin-top: clamp(1.9rem, 3.4vw, 2.9rem); display: flex; gap: clamp(14px, 1.6vw, 20px); justify-content: center; flex-wrap: wrap;
   opacity: 0; animation: heroUp 1s var(--ease) .55s forwards; }
+/* larger buttons — scoped to the hero only, global .btn untouched */
+.hero__actions .btn {
+  padding: clamp(.95em, 1.3vw, 1.15em) clamp(1.7em, 2.4vw, 2.25em);
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  min-height: 48px;
+}
 @keyframes heroUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
 
 .hero__scroll {
@@ -366,21 +444,31 @@ body:not(.intro-done) { overflow: hidden; }
 @media (max-width: 860px) {
   .nav__toggle { display: flex; }
   .nav__menu {
-    position: fixed; inset: 0 0 0 auto; width: min(320px, 82vw);
-    flex-direction: column; align-items: flex-start; justify-content: center;
-    gap: 28px; padding: 40px;
-    background: var(--cream); box-shadow: -20px 0 60px rgba(0,0,0,.25);
+    position: fixed; inset: 0;
+    width: 100%; height: 100vh; height: 100dvh;
+    /* full-screen overlay: intentional coverage (no page peeking on the side).
+       The scrolled header's backdrop-filter is a containing block, so we set an
+       explicit 100dvh rather than relying on bottom:0. */
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: clamp(24px, 4.5vh, 38px); padding: 40px;
+    background: var(--cream);
     transform: translateX(100%); transition: transform .4s var(--ease);
+    z-index: 10;
   }
   .nav__menu.open { transform: translateX(0); }
-  .nav__menu a { color: var(--brown-deep) !important; text-shadow: none; font-size: 1.2rem; }
+  .nav__menu a { color: var(--brown-deep) !important; text-shadow: none; font-size: 1.35rem; text-align: center; }
   .nav__cta { background: var(--olive-deep); }
+  /* CTA sits on olive-deep: force cream text for ≥4.5:1 contrast
+     (higher specificity than `.nav__menu a`) */
+  .nav__menu .nav__cta { color: var(--cream) !important; margin-top: .4rem; }
   body.nav-open { overflow: hidden; }
   .nav__toggle.active span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
   .nav__toggle.active span:nth-child(2) { opacity: 0; }
   .nav__toggle.active span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
   .nav__toggle.active span { background: var(--brown-deep) !important; }
 
+  /* mobile: swap the wide wordmark for the compact square mark, which sits
+     comfortably in the bar and never gets squashed or hidden by the menu */
   .brand__logo { display: none; }
   .brand__mark { display: block; }
 
