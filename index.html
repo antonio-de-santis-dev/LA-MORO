@@ -140,8 +140,12 @@
           <p class="section-lead">Tutti i nostri piatti sono preparati al momento, con ingredienti freschi provenienti — quando possibile — direttamente dalla nostra azienda agricola, o da produttori tipici del territorio.</p>
         </header>
 
-        <div class="menu-grid">
-          <article class="dish" data-reveal>
+        <div class="dish-carousel" role="region" aria-roledescription="carosello" aria-label="I nostri piatti, carosello scorrevole">
+          <button class="dish-carousel__arrow dish-carousel__arrow--prev" type="button" aria-label="Mostra i piatti precedenti">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dish-carousel__track" id="dishTrack" role="list">
+          <article class="dish" tabindex="0" role="listitem">
             <div class="dish__img"><img src="assets/images/antipasto-fritti-misti.jpg" loading="lazy" alt="Antipasto di fritti misti — pittule, crocchette di patate e polpette — Agriturismo La Morò"></div>
             <div class="dish__body">
               <span class="dish__cat">Antipasti</span>
@@ -150,7 +154,7 @@
             </div>
           </article>
 
-          <article class="dish" data-reveal>
+          <article class="dish" tabindex="0" role="listitem">
             <div class="dish__img"><img src="assets/images/involtini-brace-rosmarino.jpg" loading="lazy" alt="Involtini e bombette alla brace con rosmarino e limone — Agriturismo La Morò"></div>
             <div class="dish__body">
               <span class="dish__cat">Dalla brace</span>
@@ -159,7 +163,7 @@
             </div>
           </article>
 
-          <article class="dish" data-reveal>
+          <article class="dish" tabindex="0" role="listitem">
             <div class="dish__img"><img src="assets/images/orecchiette-cime-rapa.jpg" loading="lazy" alt="Orecchiette con cime di rapa — Agriturismo La Morò"></div>
             <div class="dish__body">
               <span class="dish__cat">Primi piatti</span>
@@ -168,7 +172,7 @@
             </div>
           </article>
 
-          <article class="dish" data-reveal>
+          <article class="dish" tabindex="0" role="listitem">
             <div class="dish__img"><img src="assets/images/tagliatelle-ceci.jpg" loading="lazy" alt="Tagliatelle con ceci e laganelle croccanti fritte — Agriturismo La Morò"></div>
             <div class="dish__body">
               <span class="dish__cat">Primi piatti</span>
@@ -177,7 +181,7 @@
             </div>
           </article>
 
-          <article class="dish" data-reveal>
+          <article class="dish" tabindex="0" role="listitem">
             <div class="dish__img"><img src="assets/images/pollo-brace-limone.jpg" loading="lazy" alt="Pollo alla brace con rosmarino e limone — Agriturismo La Morò"></div>
             <div class="dish__body">
               <span class="dish__cat">Secondi &amp; grigliate</span>
@@ -186,7 +190,7 @@
             </div>
           </article>
 
-          <article class="dish" data-reveal>
+          <article class="dish" tabindex="0" role="listitem">
             <div class="dish__img"><img src="assets/images/grigliata-mista.jpg" loading="lazy" alt="Grigliata mista di carni — bombette, salsicce e costine — Agriturismo La Morò"></div>
             <div class="dish__body">
               <span class="dish__cat">Secondi &amp; grigliate</span>
@@ -195,7 +199,7 @@
             </div>
           </article>
 
-          <article class="dish" data-reveal>
+          <article class="dish" tabindex="0" role="listitem">
             <div class="dish__img"><img src="assets/images/parmigiana-melanzane.jpg" loading="lazy" alt="Parmigiana di melanzane con basilico — Agriturismo La Morò"></div>
             <div class="dish__body">
               <span class="dish__cat">Il classico</span>
@@ -204,7 +208,7 @@
             </div>
           </article>
 
-          <article class="dish" data-reveal>
+          <article class="dish" tabindex="0" role="listitem">
             <div class="dish__img"><img src="assets/images/semifreddo-caffe.jpg" loading="lazy" alt="Semifreddo con cioccolato caldo e caffè — Agriturismo La Morò"></div>
             <div class="dish__body">
               <span class="dish__cat">Il dolce</span>
@@ -212,6 +216,15 @@
               <p>Il finale goloso: semifreddo con una cascata di cioccolato caldo.</p>
             </div>
           </article>
+          </div>
+          <button class="dish-carousel__arrow dish-carousel__arrow--next" type="button" aria-label="Mostra i piatti successivi">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <!-- big CTA to the full online menu -->
+        <div class="menu-cta" data-reveal>
+          <a class="menu-cta__link" href="https://menuagrturismolamoro.s3.eu-north-1.amazonaws.com/index.html" target="_blank" rel="noopener noreferrer">Scopri il nostro menù</a>
         </div>
 
         <!-- Dietro le quinte -->
