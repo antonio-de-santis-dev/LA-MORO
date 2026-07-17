@@ -348,52 +348,71 @@ body:not(.intro-done) { overflow: hidden; }
    ===================================================================== */
 .menu { background: var(--cream-2); }
 
-/* ---------- Dishes carousel (horizontal slider, peek, snap, drag) ---------- */
-.dish-carousel { position: relative; }
-.dish-carousel__track {
-  display: flex; gap: clamp(16px, 2vw, 26px);
-  overflow-x: auto; overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scroll-padding-inline: 2px;
-  padding: 8px 2px 24px;          /* room for the card shadow + hover lift */
-  scrollbar-width: none;          /* Firefox */
-  cursor: grab;
+/* ===================== Dishes Coverflow (3D) ===================== */
+/* Variabili di tuning dell'effetto — cambiale QUI per regolare tutto:
+   il JS le legge da .coverflow e ricalcola le trasformazioni delle card. */
+.coverflow {
+  --coverflow-speed: .45s;                                   /* durata transizione card */
+  --coverflow-card-width: clamp(230px, 27vw, 300px);         /* larghezza card */
+  --coverflow-card-height: calc(var(--coverflow-card-width) + 168px); /* altezza card (immagine quadrata + testo) */
+  --coverflow-perspective: 1400px;                           /* profondità prospettica */
+  --coverflow-scale-side: .84;                               /* scala delle card adiacenti (offset ±1) */
+  --coverflow-rotate: 38deg;                                 /* angolo rotateY delle laterali */
+  --coverflow-translate-z: -170px;                           /* arretramento in Z delle laterali */
+  --coverflow-offset-x: .62;  /* spostamento laterale tra card, in frazione della larghezza card */
+  position: relative;
+  padding: 6px 0 4px;
 }
-.dish-carousel__track::-webkit-scrollbar { display: none; }  /* WebKit */
-.dish-carousel__track.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.coverflow__viewport {
+  position: relative; overflow: hidden; padding: 26px 0;
+  /* horizontal swipe drives the carousel; vertical still scrolls the page */
+  touch-action: pan-y;
+}
+.coverflow__stage {
+  position: relative;
+  height: var(--coverflow-card-height);
+  perspective: var(--coverflow-perspective);
+  transform-style: preserve-3d;
+}
+/* during a drag the cards must follow the pointer with no transition lag */
+.coverflow__stage.is-dragging .coverflow__card { transition: none; }
 
-.dish {
-  flex: 0 0 clamp(288px, 33%, 358px);   /* larger cards; ~3 visible + a peek */
-  scroll-snap-align: start;
+/* card: posizionata in assoluto e centrata; il JS ne imposta transform/opacity/z-index */
+.dish.coverflow__card {
+  position: absolute; top: 0; left: 50%;
+  width: var(--coverflow-card-width);
+  height: var(--coverflow-card-height);
+  margin-left: calc(var(--coverflow-card-width) / -2);
+  display: flex; flex-direction: column;
   background: var(--surface); border-radius: var(--radius); overflow: hidden;
-  box-shadow: var(--shadow-sm); border: 1px solid rgba(231,221,198,.7);
-  transition: transform .4s var(--ease), box-shadow .4s;
+  box-shadow: var(--shadow-md); border: 1px solid rgba(231,221,198,.7);
+  transition: transform var(--coverflow-speed) ease-in-out, opacity var(--coverflow-speed) ease-in-out;
+  transform-origin: center center; backface-visibility: hidden;
+  will-change: transform; cursor: pointer;
 }
-.dish:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
-.dish:focus-visible { outline: 3px solid var(--olive); outline-offset: 3px; }
-.dish__img { aspect-ratio: 1/1; overflow: hidden; }
-.dish__img img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s var(--ease); }
-.dish:hover .dish__img img { transform: scale(1.06); }
-.dish__body { padding: 22px 24px 26px; }
+.coverflow__card:focus-visible { outline: 3px solid var(--olive); outline-offset: 4px; }
+.coverflow__card.is-active { cursor: zoom-in; }
+.dish__img { flex: 0 0 auto; height: var(--coverflow-card-width); overflow: hidden; }
+.dish__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dish__body { flex: 1 1 auto; padding: 18px 20px 20px; overflow: hidden; }
 .dish__cat { font-size: .74rem; text-transform: uppercase; letter-spacing: .16em; font-weight: 700; color: var(--cotto); }
-.dish__body h3 { font-size: 1.42rem; margin: .4rem 0 .55rem; }
-.dish__body p { font-size: 1rem; color: var(--muted); line-height: 1.55; }
+.dish__body h3 { font-size: 1.36rem; margin: .4rem 0 .5rem; }
+.dish__body p { font-size: .98rem; color: var(--muted); line-height: 1.5; }
 
-/* arrows — discreet, overlapping the edges */
-.dish-carousel__arrow {
-  position: absolute; top: 38%; transform: translateY(-50%);
-  z-index: 5; width: 48px; height: 48px; border-radius: 50%;
+/* frecce laterali */
+.coverflow__arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  z-index: 20; width: 48px; height: 48px; border-radius: 50%;
   display: grid; place-items: center;
   background: rgba(255,253,247,.94); color: var(--olive-deep);
   border: 1px solid var(--sand); box-shadow: var(--shadow-md);
   cursor: pointer; transition: background .3s, transform .3s, opacity .3s;
 }
-.dish-carousel__arrow:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
-.dish-carousel__arrow:focus-visible { outline: 3px solid var(--olive); outline-offset: 2px; }
-.dish-carousel__arrow--prev { left: -6px; }
-.dish-carousel__arrow--next { right: -6px; }
-.dish-carousel__arrow[disabled] { opacity: .28; cursor: default; pointer-events: none; }
+.coverflow__arrow--prev { left: clamp(2px, 2vw, 28px); }
+.coverflow__arrow--next { right: clamp(2px, 2vw, 28px); }
+.coverflow__arrow:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
+.coverflow__arrow:focus-visible { outline: 3px solid var(--olive); outline-offset: 2px; }
+.coverflow__arrow[disabled] { opacity: .3; cursor: default; pointer-events: none; }
 
 /* big CTA to the full online menu */
 .menu-cta { text-align: center; margin: clamp(44px, 6vw, 76px) 0 clamp(6px, 2vw, 18px); }
@@ -409,6 +428,34 @@ body:not(.intro-done) { overflow: hidden; }
 }
 .menu-cta__link:hover { background: var(--olive); transform: translateY(-3px); box-shadow: 0 18px 36px rgba(65,76,34,.42); }
 .menu-cta__link:focus-visible { outline: 3px solid var(--olive-dark); outline-offset: 3px; }
+
+/* ===================== Dish modal / lightbox ===================== */
+.dish-modal[hidden] { display: none; }
+.dish-modal { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: clamp(16px, 4vw, 40px); }
+.dish-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.7); animation: modalFade .3s ease; }
+.dish-modal__panel {
+  position: relative; z-index: 1; width: min(560px, 94vw); max-height: 90vh; overflow-y: auto;
+  background: var(--surface); border-radius: var(--radius-lg);
+  box-shadow: 0 30px 80px rgba(0,0,0,.5); border: 1px solid rgba(231,221,198,.7);
+  animation: modalPop .35s var(--ease);
+}
+.dish-modal__img { aspect-ratio: 16 / 11; overflow: hidden; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.dish-modal__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dish-modal__body { padding: clamp(20px, 3.5vw, 34px); }
+.dish-modal__body .dish__cat { color: var(--cotto); }
+.dish-modal__body h3 { font-family: var(--heading-font); color: var(--brown-deep); font-size: clamp(1.6rem, 3vw, 2.2rem); margin: .5rem 0 .8rem; line-height: 1.1; }
+.dish-modal__body p { color: #4a4736; font-size: 1.05rem; line-height: 1.6; }
+.dish-modal__close {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+  background: rgba(27,28,18,.55); color: #fff; display: grid; place-items: center;
+  transition: background .3s;
+}
+.dish-modal__close:hover { background: rgba(27,28,18,.82); }
+.dish-modal__close:focus-visible { outline: 3px solid var(--cream); outline-offset: 2px; }
+@keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalPop { from { opacity: 0; transform: translateY(20px) scale(.96); } to { opacity: 1; transform: none; } }
+body.modal-open { overflow: hidden; }
 
 /* Backstage band */
 .backstage {
@@ -508,12 +555,20 @@ body:not(.intro-done) { overflow: hidden; }
    RESPONSIVE
    ===================================================================== */
 @media (max-width: 1024px) {
-  .dish { flex-basis: 42%; }   /* ~2 cards + peek on tablet */
+  /* tablet: ~1 card per lato, effetto 3D attenuato */
+  .coverflow {
+    --coverflow-perspective: 1150px; --coverflow-rotate: 32deg;
+    --coverflow-translate-z: -140px; --coverflow-offset-x: .54;
+  }
 }
 @media (max-width: 640px) {
-  /* mobile: one card at a time with a peek of the next; touch swipe, no arrows */
-  .dish { flex-basis: 82vw; }
-  .dish-carousel__arrow { display: none; }
+  /* mobile: card centrale larga, adiacenti appena accennate, 3D ridotto, niente frecce */
+  .coverflow {
+    --coverflow-card-width: 76vw; --coverflow-perspective: 900px;
+    --coverflow-rotate: 20deg; --coverflow-translate-z: -80px;
+    --coverflow-offset-x: .6; --coverflow-scale-side: .82;
+  }
+  .coverflow__arrow { display: none; }
 }
 @media (max-width: 860px) {
   .nav__toggle { display: flex; }

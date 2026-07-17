@@ -192,57 +192,195 @@
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
   }
 
-  /* ---------- DISHES CAROUSEL ---------- */
-  (function initDishCarousel() {
-    var track = document.getElementById('dishTrack');
-    if (!track) return;
-    var prev = document.querySelector('.dish-carousel__arrow--prev');
-    var next = document.querySelector('.dish-carousel__arrow--next');
+  /* ---------- DISHES COVERFLOW (3D) + MODAL ---------- */
+  (function initCoverflow() {
+    var root = document.getElementById('dishCoverflow');
+    var stage = document.getElementById('coverflowStage');
+    if (!root || !stage) return;
+    var viewport = root.querySelector('.coverflow__viewport');
+    var cards = Array.prototype.slice.call(stage.querySelectorAll('.coverflow__card'));
+    if (!cards.length) return;
+    var prevBtn = root.querySelector('.coverflow__arrow--prev');
+    var nextBtn = root.querySelector('.coverflow__arrow--next');
 
-    function step() {
-      var card = track.querySelector('.dish');
-      var gap = parseFloat(getComputedStyle(track).gap) || 20;
-      return card ? card.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
-    }
-    function go(dir) {
-      track.scrollBy({ left: dir * step(), behavior: reduceMotion ? 'auto' : 'smooth' });
-    }
-    if (prev) prev.addEventListener('click', function () { go(-1); });
-    if (next) next.addEventListener('click', function () { go(1); });
+    var active = 0;
+    var LOOP = false; // agli estremi le frecce si disabilitano (vedi documentazione)
 
-    // enable/disable arrows at the ends
+    // --- tuning read from the CSS custom properties (single source of truth) ---
+    var cardW = 300, scaleSide = .84, rotate = 38, tzBase = -170, offsetRatio = .62;
+    function readTuning() {
+      var cs = getComputedStyle(root);
+      function n(name, fb) { var v = parseFloat(cs.getPropertyValue(name)); return isNaN(v) ? fb : v; }
+      // card width can't be parsed from clamp(): measure the real rendered card
+      cardW = cards[0].getBoundingClientRect().width || 300;
+      scaleSide   = n('--coverflow-scale-side', .84);
+      rotate      = n('--coverflow-rotate', 38);
+      tzBase      = n('--coverflow-translate-z', -170);
+      offsetRatio = n('--coverflow-offset-x', .62);
+    }
+
+    // continuous transform for a (possibly fractional) signed offset a = i - center
+    function styleFor(card, a) {
+      var aa = Math.abs(a);
+      var sign = a < 0 ? -1 : (a > 0 ? 1 : 0);
+      if (aa >= 3.2) {
+        card.style.opacity = '0';
+        card.style.pointerEvents = 'none';
+        card.style.transform = 'translateX(' + (sign * cardW) + 'px) scale(.6)';
+        card.style.zIndex = '90';
+        return;
+      }
+      var tx = sign * cardW * offsetRatio * (aa <= 1 ? aa : 1 + (aa - 1) * 0.82);
+      var tz = reduceMotion ? 0 : tzBase * Math.min(aa, 2);
+      var ry = reduceMotion ? 0 : -sign * rotate * Math.min(aa, 1);
+      var sc = aa <= 1 ? 1 - (1 - scaleSide) * aa : Math.max(0.6, scaleSide - (aa - 1) * 0.09);
+      var op = aa <= 1 ? 1 - 0.3 * aa : (aa <= 2 ? 0.7 - 0.3 * (aa - 1) : Math.max(0, 0.4 - 0.4 * (aa - 2)));
+      card.style.transform =
+        'translateX(' + tx.toFixed(1) + 'px) translateZ(' + tz.toFixed(1) + 'px) rotateY(' + ry.toFixed(2) + 'deg) scale(' + sc.toFixed(3) + ')';
+      card.style.opacity = op.toFixed(3);
+      card.style.zIndex = String(100 - Math.round(aa));
+      card.style.pointerEvents = aa >= 2.5 ? 'none' : 'auto';
+    }
+    function render(center) {
+      for (var i = 0; i < cards.length; i++) styleFor(cards[i], i - center);
+    }
+
     function updateArrows() {
-      if (!prev || !next) return;
-      var max = track.scrollWidth - track.clientWidth - 2;
-      prev.disabled = track.scrollLeft <= 2;
-      next.disabled = track.scrollLeft >= max;
+      if (prevBtn) prevBtn.disabled = !LOOP && active <= 0;
+      if (nextBtn) nextBtn.disabled = !LOOP && active >= cards.length - 1;
     }
-    track.addEventListener('scroll', updateArrows, { passive: true });
-    window.addEventListener('resize', updateArrows, { passive: true });
-    updateArrows();
+    function setActive(i, focusIt) {
+      if (LOOP) { i = (i % cards.length + cards.length) % cards.length; }
+      else { i = Math.max(0, Math.min(cards.length - 1, i)); }
+      active = i;
+      readTuning();
+      render(active);
+      cards.forEach(function (c, idx) {
+        c.setAttribute('tabindex', idx === active ? '0' : '-1');
+        c.classList.toggle('is-active', idx === active);
+        c.setAttribute('aria-hidden', Math.abs(idx - active) >= 3 ? 'true' : 'false');
+      });
+      updateArrows();
+      if (focusIt) cards[active].focus();
+    }
 
-    // drag-to-scroll with the mouse (touch uses native scrolling)
-    var down = false, startX = 0, startScroll = 0, moved = false;
-    track.addEventListener('pointerdown', function (e) {
-      if (e.pointerType !== 'mouse') return;
-      down = true; moved = false; startX = e.clientX; startScroll = track.scrollLeft;
-      track.classList.add('is-dragging');
-      try { track.setPointerCapture(e.pointerId); } catch (err) {}
+    // arrows
+    if (prevBtn) prevBtn.addEventListener('click', function () { setActive(active - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { setActive(active + 1); });
+
+    // click / focus on a card
+    var dragMoved = false;
+    cards.forEach(function (card, i) {
+      card.addEventListener('click', function () {
+        if (dragMoved) { dragMoved = false; return; }
+        if (i === active) openModal(i); else setActive(i, true);
+      });
+      card.addEventListener('focus', function () { if (i !== active) setActive(i); });
     });
-    track.addEventListener('pointermove', function (e) {
+
+    // keyboard (carousel focused)
+    root.addEventListener('keydown', function (e) {
+      var onCard = document.activeElement && document.activeElement.classList.contains('coverflow__card');
+      switch (e.key) {
+        case 'ArrowLeft':  e.preventDefault(); setActive(active - 1, true); break;
+        case 'ArrowRight': e.preventDefault(); setActive(active + 1, true); break;
+        case 'Home':       e.preventDefault(); setActive(0, true); break;
+        case 'End':        e.preventDefault(); setActive(cards.length - 1, true); break;
+        case 'Enter':
+        case ' ':
+          if (onCard) { e.preventDefault(); openModal(active); }
+          break;
+      }
+    });
+
+    // drag / swipe (Pointer Events: mouse + touch)
+    var down = false, startX = 0, stepPx = 200;
+    viewport.addEventListener('pointerdown', function (e) {
+      if (e.button && e.button !== 0) return;
+      down = true; dragMoved = false; startX = e.clientX;
+      readTuning();
+      stepPx = Math.max(80, cardW * offsetRatio * 1.5);
+      stage.classList.add('is-dragging');
+      try { viewport.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    viewport.addEventListener('pointermove', function (e) {
       if (!down) return;
       var dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) moved = true;
-      track.scrollLeft = startScroll - dx;
+      if (Math.abs(dx) > 6) dragMoved = true;
+      var offset = -dx / stepPx;
+      var center = LOOP ? active + offset : Math.max(0, Math.min(cards.length - 1, active + offset));
+      render(center);
     });
-    function up() { if (!down) return; down = false; track.classList.remove('is-dragging'); }
-    track.addEventListener('pointerup', up);
-    track.addEventListener('pointercancel', up);
-    track.addEventListener('pointerleave', up);
-    // swallow the click that ends a drag so a card isn't accidentally activated
-    track.addEventListener('click', function (e) {
-      if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
-    }, true);
+    function endDrag(e) {
+      if (!down) return;
+      down = false;
+      stage.classList.remove('is-dragging');
+      var dx = (e && typeof e.clientX === 'number') ? e.clientX - startX : 0;
+      var offset = -dx / stepPx;
+      if (Math.abs(offset) < 0.25) setActive(active);          // sotto soglia: torna indietro
+      else setActive(active + (offset > 0 ? Math.ceil(offset) : Math.floor(offset)));
+    }
+    viewport.addEventListener('pointerup', endDrag);
+    viewport.addEventListener('pointercancel', endDrag);
+
+    window.addEventListener('resize', function () { setActive(active); }, { passive: true });
+
+    /* ---------- MODAL ---------- */
+    var modal = document.getElementById('dishModal');
+    var modalImg = document.getElementById('dishModalImg');
+    var modalCat = document.getElementById('dishModalCat');
+    var modalTitle = document.getElementById('dishModalTitle');
+    var modalDesc = document.getElementById('dishModalDesc');
+    var lastFocused = null;
+
+    function openModal(i) {
+      if (!modal) return;
+      var card = cards[i];
+      var img = card.querySelector('.dish__img img');
+      modalImg.src = img.getAttribute('src');
+      modalImg.alt = img.getAttribute('alt') || '';
+      modalCat.textContent = card.querySelector('.dish__cat').textContent;
+      modalTitle.textContent = card.querySelector('h3').textContent;
+      modalDesc.textContent = card.querySelector('p').textContent;
+      lastFocused = card;
+      modal.hidden = false;
+      document.body.classList.add('modal-open');
+      modal.querySelector('.dish-modal__close').focus();
+      document.addEventListener('keydown', onModalKeydown, true);
+    }
+    function closeModal() {
+      if (!modal || modal.hidden) return;
+      modal.hidden = true;
+      document.body.classList.remove('modal-open');
+      document.removeEventListener('keydown', onModalKeydown, true);
+      if (lastFocused) lastFocused.focus();
+    }
+    function onModalKeydown(e) {
+      if (e.key === 'Escape') { e.preventDefault(); closeModal(); return; }
+      if (e.key !== 'Tab') return;
+      var f = modal.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      var list = Array.prototype.filter.call(f, function (el) {
+        return !el.disabled && (el.offsetWidth > 0 || el.offsetHeight > 0);
+      });
+      if (!list.length) { e.preventDefault(); return; }
+      var first = list[0], last = list[list.length - 1];
+      var a = document.activeElement;
+      if (!modal.contains(a)) { e.preventDefault(); first.focus(); return; }   // pull focus back in
+      if (e.shiftKey && a === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+    }
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target.closest('[data-close]')) closeModal();
+      });
+      // clicks inside the panel (not on a data-close element) must not close it
+      modal.querySelector('.dish-modal__panel').addEventListener('click', function (e) {
+        if (!e.target.closest('[data-close]')) e.stopPropagation();
+      });
+    }
+
+    // init
+    setActive(0);
   })();
 
   /* ---------- FOOTER YEAR ---------- */
