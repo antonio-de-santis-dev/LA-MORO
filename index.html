@@ -140,85 +140,80 @@
           <p class="section-lead">Tutti i nostri piatti sono preparati al momento, con ingredienti freschi provenienti — quando possibile — direttamente dalla nostra azienda agricola, o da produttori tipici del territorio.</p>
         </header>
 
-        <div class="dish-carousel" role="region" aria-roledescription="carosello" aria-label="I nostri piatti, carosello scorrevole">
-          <button class="dish-carousel__arrow dish-carousel__arrow--prev" type="button" aria-label="Mostra i piatti precedenti">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="coverflow" id="dishCoverflow" role="group" aria-roledescription="carosello 3D" aria-label="I nostri piatti, carosello 3D">
+          <button class="coverflow__arrow coverflow__arrow--prev" type="button" aria-label="Piatto precedente">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <div class="dish-carousel__track" id="dishTrack" role="list">
-          <article class="dish" tabindex="0" role="listitem">
-            <div class="dish__img"><img src="assets/images/antipasto-fritti-misti.jpg" loading="lazy" alt="Antipasto di fritti misti — pittule, crocchette di patate e polpette — Agriturismo La Morò"></div>
-            <div class="dish__body">
-              <span class="dish__cat">Antipasti</span>
-              <h3>Fritti misti</h3>
-              <p>Pittule, crocchette di patate, polpette di melanzane e panzerotti, dorati al momento.</p>
+          <div class="coverflow__viewport">
+            <div class="coverflow__stage" id="coverflowStage">
+              <article class="dish coverflow__card" data-index="0" tabindex="-1" aria-roledescription="piatto" aria-label="Antipasti: Fritti misti">
+                <div class="dish__img"><img src="assets/images/antipasto-fritti-misti.jpg" loading="lazy" alt="Antipasto di fritti misti — pittule, crocchette di patate e polpette — Agriturismo La Morò"></div>
+                <div class="dish__body">
+                  <span class="dish__cat">Antipasti</span>
+                  <h3>Fritti misti</h3>
+                  <p>Pittule, crocchette di patate, polpette di melanzane e panzerotti, dorati al momento.</p>
+                </div>
+              </article>
+              <article class="dish coverflow__card" data-index="1" tabindex="-1" aria-roledescription="piatto" aria-label="Dalla brace: Involtini e bombette">
+                <div class="dish__img"><img src="assets/images/involtini-brace-rosmarino.jpg" loading="lazy" alt="Involtini e bombette alla brace con rosmarino e limone — Agriturismo La Morò"></div>
+                <div class="dish__body">
+                  <span class="dish__cat">Dalla brace</span>
+                  <h3>Involtini e bombette</h3>
+                  <p>Cotti alla brace, profumati al rosmarino e serviti con limone del nostro Salento.</p>
+                </div>
+              </article>
+              <article class="dish coverflow__card" data-index="2" tabindex="-1" aria-roledescription="piatto" aria-label="Primi piatti: Orecchiette con cime di rapa">
+                <div class="dish__img"><img src="assets/images/orecchiette-cime-rapa.jpg" loading="lazy" alt="Orecchiette con cime di rapa — Agriturismo La Morò"></div>
+                <div class="dish__body">
+                  <span class="dish__cat">Primi piatti</span>
+                  <h3>Orecchiette con cime di rapa</h3>
+                  <p>Il primo simbolo della Puglia, con le verdure di stagione dei nostri campi.</p>
+                </div>
+              </article>
+              <article class="dish coverflow__card" data-index="3" tabindex="-1" aria-roledescription="piatto" aria-label="Primi piatti: Tagliatelle e ceci">
+                <div class="dish__img"><img src="assets/images/tagliatelle-ceci.jpg" loading="lazy" alt="Tagliatelle con ceci e laganelle croccanti fritte — Agriturismo La Morò"></div>
+                <div class="dish__body">
+                  <span class="dish__cat">Primi piatti</span>
+                  <h3>Tagliatelle e ceci</h3>
+                  <p>Pasta fresca e ceci, con laganelle croccanti fritte a completare il piatto.</p>
+                </div>
+              </article>
+              <article class="dish coverflow__card" data-index="4" tabindex="-1" aria-roledescription="piatto" aria-label="Secondi e grigliate: Pollo alla brace">
+                <div class="dish__img"><img src="assets/images/pollo-brace-limone.jpg" loading="lazy" alt="Pollo alla brace con rosmarino e limone — Agriturismo La Morò"></div>
+                <div class="dish__body">
+                  <span class="dish__cat">Secondi &amp; grigliate</span>
+                  <h3>Pollo alla brace</h3>
+                  <p>Marinato con rosmarino e limone, cotto lentamente sulla brace.</p>
+                </div>
+              </article>
+              <article class="dish coverflow__card" data-index="5" tabindex="-1" aria-roledescription="piatto" aria-label="Secondi e grigliate: Grigliata mista">
+                <div class="dish__img"><img src="assets/images/grigliata-mista.jpg" loading="lazy" alt="Grigliata mista di carni — bombette, salsicce e costine — Agriturismo La Morò"></div>
+                <div class="dish__body">
+                  <span class="dish__cat">Secondi &amp; grigliate</span>
+                  <h3>Grigliata mista</h3>
+                  <p>Bombette, salsicce e costine: un tripudio di carni alla brace, abbondante e conviviale.</p>
+                </div>
+              </article>
+              <article class="dish coverflow__card" data-index="6" tabindex="-1" aria-roledescription="piatto" aria-label="Il classico: Parmigiana di melanzane">
+                <div class="dish__img"><img src="assets/images/parmigiana-melanzane.jpg" loading="lazy" alt="Parmigiana di melanzane con basilico — Agriturismo La Morò"></div>
+                <div class="dish__body">
+                  <span class="dish__cat">Il classico</span>
+                  <h3>Parmigiana di melanzane</h3>
+                  <p>Un intramontabile della nostra tavola, con basilico fresco dell'orto.</p>
+                </div>
+              </article>
+              <article class="dish coverflow__card" data-index="7" tabindex="-1" aria-roledescription="piatto" aria-label="Il dolce: Semifreddo al caffè">
+                <div class="dish__img"><img src="assets/images/semifreddo-caffe.jpg" loading="lazy" alt="Semifreddo con cioccolato caldo e caffè — Agriturismo La Morò"></div>
+                <div class="dish__body">
+                  <span class="dish__cat">Il dolce</span>
+                  <h3>Semifreddo al caffè</h3>
+                  <p>Il finale goloso: semifreddo con una cascata di cioccolato caldo.</p>
+                </div>
+              </article>
             </div>
-          </article>
-
-          <article class="dish" tabindex="0" role="listitem">
-            <div class="dish__img"><img src="assets/images/involtini-brace-rosmarino.jpg" loading="lazy" alt="Involtini e bombette alla brace con rosmarino e limone — Agriturismo La Morò"></div>
-            <div class="dish__body">
-              <span class="dish__cat">Dalla brace</span>
-              <h3>Involtini e bombette</h3>
-              <p>Cotti alla brace, profumati al rosmarino e serviti con limone del nostro Salento.</p>
-            </div>
-          </article>
-
-          <article class="dish" tabindex="0" role="listitem">
-            <div class="dish__img"><img src="assets/images/orecchiette-cime-rapa.jpg" loading="lazy" alt="Orecchiette con cime di rapa — Agriturismo La Morò"></div>
-            <div class="dish__body">
-              <span class="dish__cat">Primi piatti</span>
-              <h3>Orecchiette con cime di rapa</h3>
-              <p>Il primo simbolo della Puglia, con le verdure di stagione dei nostri campi.</p>
-            </div>
-          </article>
-
-          <article class="dish" tabindex="0" role="listitem">
-            <div class="dish__img"><img src="assets/images/tagliatelle-ceci.jpg" loading="lazy" alt="Tagliatelle con ceci e laganelle croccanti fritte — Agriturismo La Morò"></div>
-            <div class="dish__body">
-              <span class="dish__cat">Primi piatti</span>
-              <h3>Tagliatelle e ceci</h3>
-              <p>Pasta fresca e ceci, con laganelle croccanti fritte a completare il piatto.</p>
-            </div>
-          </article>
-
-          <article class="dish" tabindex="0" role="listitem">
-            <div class="dish__img"><img src="assets/images/pollo-brace-limone.jpg" loading="lazy" alt="Pollo alla brace con rosmarino e limone — Agriturismo La Morò"></div>
-            <div class="dish__body">
-              <span class="dish__cat">Secondi &amp; grigliate</span>
-              <h3>Pollo alla brace</h3>
-              <p>Marinato con rosmarino e limone, cotto lentamente sulla brace.</p>
-            </div>
-          </article>
-
-          <article class="dish" tabindex="0" role="listitem">
-            <div class="dish__img"><img src="assets/images/grigliata-mista.jpg" loading="lazy" alt="Grigliata mista di carni — bombette, salsicce e costine — Agriturismo La Morò"></div>
-            <div class="dish__body">
-              <span class="dish__cat">Secondi &amp; grigliate</span>
-              <h3>Grigliata mista</h3>
-              <p>Bombette, salsicce e costine: un tripudio di carni alla brace, abbondante e conviviale.</p>
-            </div>
-          </article>
-
-          <article class="dish" tabindex="0" role="listitem">
-            <div class="dish__img"><img src="assets/images/parmigiana-melanzane.jpg" loading="lazy" alt="Parmigiana di melanzane con basilico — Agriturismo La Morò"></div>
-            <div class="dish__body">
-              <span class="dish__cat">Il classico</span>
-              <h3>Parmigiana di melanzane</h3>
-              <p>Un intramontabile della nostra tavola, con basilico fresco dell'orto.</p>
-            </div>
-          </article>
-
-          <article class="dish" tabindex="0" role="listitem">
-            <div class="dish__img"><img src="assets/images/semifreddo-caffe.jpg" loading="lazy" alt="Semifreddo con cioccolato caldo e caffè — Agriturismo La Morò"></div>
-            <div class="dish__body">
-              <span class="dish__cat">Il dolce</span>
-              <h3>Semifreddo al caffè</h3>
-              <p>Il finale goloso: semifreddo con una cascata di cioccolato caldo.</p>
-            </div>
-          </article>
           </div>
-          <button class="dish-carousel__arrow dish-carousel__arrow--next" type="button" aria-label="Mostra i piatti successivi">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <button class="coverflow__arrow coverflow__arrow--next" type="button" aria-label="Piatto successivo">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
 
@@ -381,6 +376,22 @@
       </div>
     </div>
   </footer>
+
+  <!-- ============ DISH MODAL / LIGHTBOX ============ -->
+  <div class="dish-modal" id="dishModal" hidden>
+    <div class="dish-modal__backdrop" data-close></div>
+    <div class="dish-modal__panel" role="dialog" aria-modal="true" aria-labelledby="dishModalTitle">
+      <button class="dish-modal__close" type="button" data-close aria-label="Chiudi i dettagli del piatto">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="dish-modal__img"><img id="dishModalImg" src="" alt=""></div>
+      <div class="dish-modal__body">
+        <span class="dish__cat" id="dishModalCat"></span>
+        <h3 id="dishModalTitle"></h3>
+        <p id="dishModalDesc"></p>
+      </div>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
