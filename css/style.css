@@ -352,20 +352,21 @@ body:not(.intro-done) { overflow: hidden; }
 /* Variabili di tuning dell'effetto — cambiale QUI per regolare tutto:
    il JS le legge da .coverflow e ricalcola le trasformazioni delle card. */
 .coverflow {
-  --coverflow-speed: .45s;                                   /* durata transizione card */
-  --coverflow-card-width: clamp(230px, 27vw, 300px);         /* larghezza card */
-  --coverflow-card-height: calc(var(--coverflow-card-width) + 168px); /* altezza card (immagine quadrata + testo) */
-  --coverflow-perspective: 1400px;                           /* profondità prospettica */
-  --coverflow-scale-side: .84;                               /* scala delle card adiacenti (offset ±1) */
-  --coverflow-rotate: 38deg;                                 /* angolo rotateY delle laterali */
-  --coverflow-translate-z: -170px;                           /* arretramento in Z delle laterali */
-  --coverflow-offset-x: .62;  /* spostamento laterale tra card, in frazione della larghezza card */
+  --coverflow-speed: .5s;                                    /* durata transizione card */
+  --coverflow-card-width: clamp(250px, 30vw, 430px);         /* larghezza card (scala col viewport) */
+  --coverflow-card-height: clamp(370px, 33vw, 480px);        /* altezza card (indipendente dalla larghezza) */
+  --coverflow-perspective: 1600px;                           /* profondità prospettica */
+  --coverflow-scale-side: .82;                               /* scala delle card adiacenti (offset ±1) */
+  --coverflow-rotate: 40deg;                                 /* angolo rotateY delle laterali */
+  --coverflow-translate-z: -200px;                           /* arretramento in Z delle laterali */
+  --coverflow-offset-x: .60;  /* spostamento laterale tra card, in frazione della larghezza card */
   position: relative;
   padding: 6px 0 4px;
+  /* lo swipe orizzontale guida il carosello, quello verticale scrolla la pagina */
+  touch-action: pan-y;
 }
 .coverflow__viewport {
   position: relative; overflow: hidden; padding: 26px 0;
-  /* horizontal swipe drives the carousel; vertical still scrolls the page */
   touch-action: pan-y;
 }
 .coverflow__stage {
@@ -373,6 +374,7 @@ body:not(.intro-done) { overflow: hidden; }
   height: var(--coverflow-card-height);
   perspective: var(--coverflow-perspective);
   transform-style: preserve-3d;
+  touch-action: pan-y;
 }
 /* during a drag the cards must follow the pointer with no transition lag */
 .coverflow__stage.is-dragging .coverflow__card { transition: none; }
@@ -389,12 +391,15 @@ body:not(.intro-done) { overflow: hidden; }
   transition: transform var(--coverflow-speed) ease-in-out, opacity var(--coverflow-speed) ease-in-out;
   transform-origin: center center; backface-visibility: hidden;
   will-change: transform; cursor: pointer;
+  /* essenziale su mobile: senza questo il browser tratta lo swipe orizzontale
+     sulla card come gesto proprio e non emette pointermove al JS */
+  touch-action: pan-y;
 }
 .coverflow__card:focus-visible { outline: 3px solid var(--olive); outline-offset: 4px; }
-.coverflow__card.is-active { cursor: zoom-in; }
-.dish__img { flex: 0 0 auto; height: var(--coverflow-card-width); overflow: hidden; }
+.coverflow__card.is-active { cursor: pointer; }
+.dish__img { flex: 1 1 auto; min-height: 0; overflow: hidden; }
 .dish__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.dish__body { flex: 1 1 auto; padding: 18px 20px 20px; overflow: hidden; }
+.dish__body { flex: 0 0 auto; padding: 18px 20px 20px; overflow: hidden; }
 .dish__cat { font-size: .74rem; text-transform: uppercase; letter-spacing: .16em; font-weight: 700; color: var(--cotto); }
 .dish__body h3 { font-size: 1.36rem; margin: .4rem 0 .5rem; }
 .dish__body p { font-size: .98rem; color: var(--muted); line-height: 1.5; }
