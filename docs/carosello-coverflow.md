@@ -65,20 +65,13 @@ Il JS le rilegge da lì: **basta cambiarle qui**, non serve toccare il JavaScrip
 | Variabile | Valore desktop | Cosa fa | Se la aumento… |
 |---|---|---|---|
 | `--coverflow-speed` | `.5s` | durata transizione | il cambio card è più lento/morbido |
-| `--coverflow-card-width` | `clamp(230px, 26vw, 380px)` | larghezza card (scala col viewport) | card più grandi |
-| `--coverflow-card-height` | `clamp(350px, 30vw, 450px)` | altezza card (indipendente dalla larghezza) | card più alte |
-| `--coverflow-perspective` | `1500px` | profondità prospettica | 3D più "piatto" (valore alto) o più marcato (basso) |
-| `--coverflow-scale-side` | `.76` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
-| `--coverflow-rotate` | `33deg` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
-| `--coverflow-translate-z` | `-130px` | arretramento in Z | laterali più lontane/dietro (più negativo) |
-| `--coverflow-offset-x` | `1.05` | spostamento laterale (frazione della card) | le ±1 sporgono di più accanto alla centrale (troppo alto → escono ai lati) |
-
-> **Perché `--coverflow-offset-x` è > 1?** La prospettiva "risucchia" verso il
-> centro le card arretrate: un offset piccolo le fa sparire dietro la centrale.
-> Con `1.05` le adiacenti ±1 sporgono ~50% accanto alla centrale e si leggono come
-> arretrate dietro, non schiacciate sotto. Le card ±2 sono gestite dal JS: stanno
-> **più indietro** (profondità ×2.4) e solo un po' più larghe delle ±1, così
-> restano un accenno ai bordi senza uscire dallo schermo.
+| `--coverflow-card-width` | `clamp(250px, 30vw, 430px)` | larghezza card (scala col viewport) | card più grandi |
+| `--coverflow-card-height` | `clamp(370px, 33vw, 480px)` | altezza card (indipendente dalla larghezza) | card più alte |
+| `--coverflow-perspective` | `1600px` | profondità prospettica | 3D più "piatto" (valore alto) o più marcato (basso) |
+| `--coverflow-scale-side` | `.82` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
+| `--coverflow-rotate` | `40deg` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
+| `--coverflow-translate-z` | `-200px` | arretramento in Z | laterali più lontane/dietro (più negativo) |
+| `--coverflow-offset-x` | `.60` | spostamento laterale (frazione della card) | card più distanziate o più sovrapposte |
 
 > Nota: `--coverflow-card-width` / `--coverflow-card-height` usano `clamp()` e non
 > sono leggibili direttamente dal JS; la larghezza viene quindi **misurata** dalla
