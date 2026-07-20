@@ -211,8 +211,12 @@
     function readTuning() {
       var cs = getComputedStyle(root);
       function n(name, fb) { var v = parseFloat(cs.getPropertyValue(name)); return isNaN(v) ? fb : v; }
-      // card width can't be parsed from clamp(): measure the real rendered card
-      cardW = cards[0].getBoundingClientRect().width || 300;
+      // card width can't be parsed da clamp(): la misuriamo dalla card reale.
+      // USARE offsetWidth (larghezza di layout), NON getBoundingClientRect().width:
+      // quest'ultima include la transform 3D (scale/rotate), quindi su una card già
+      // trasformata restituirebbe la larghezza PROIETTATA (più piccola) e falserebbe
+      // il calcolo di translateX. offsetWidth ignora la transform → sempre corretta.
+      cardW = cards[0].offsetWidth || 300;
       scaleSide   = n('--coverflow-scale-side', .84);
       rotate      = n('--coverflow-rotate', 38);
       tzBase      = n('--coverflow-translate-z', -170);
