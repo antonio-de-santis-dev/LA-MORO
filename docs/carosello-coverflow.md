@@ -65,20 +65,13 @@ Il JS le rilegge da lì: **basta cambiarle qui**, non serve toccare il JavaScrip
 | Variabile | Valore desktop | Cosa fa | Se la aumento… |
 |---|---|---|---|
 | `--coverflow-speed` | `.5s` | durata transizione | il cambio card è più lento/morbido |
-| `--coverflow-card-width` | `clamp(230px, 26vw, 380px)` | larghezza card (scala col viewport) | card più grandi |
-| `--coverflow-card-height` | `clamp(350px, 30vw, 450px)` | altezza card (indipendente dalla larghezza) | card più alte |
+| `--coverflow-card-width` | `clamp(250px, 28vw, 400px)` | larghezza card (scala col viewport) | card più grandi |
+| `--coverflow-card-height` | `clamp(370px, 31vw, 460px)` | altezza card (indipendente dalla larghezza) | card più alte |
 | `--coverflow-perspective` | `1500px` | profondità prospettica | 3D più "piatto" (valore alto) o più marcato (basso) |
-| `--coverflow-scale-side` | `.76` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
-| `--coverflow-rotate` | `33deg` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
-| `--coverflow-translate-z` | `-130px` | arretramento in Z | laterali più lontane/dietro (più negativo) |
-| `--coverflow-offset-x` | `1.05` | spostamento laterale (frazione della card) | le ±1 sporgono di più accanto alla centrale (troppo alto → escono ai lati) |
-
-> **Perché `--coverflow-offset-x` è > 1?** La prospettiva "risucchia" verso il
-> centro le card arretrate: un offset piccolo le fa sparire dietro la centrale.
-> Con `1.05` le adiacenti ±1 sporgono ~50% accanto alla centrale e si leggono come
-> arretrate dietro, non schiacciate sotto. Le card ±2 sono gestite dal JS: stanno
-> **più indietro** (profondità ×2.4) e solo un po' più larghe delle ±1, così
-> restano un accenno ai bordi senza uscire dallo schermo.
+| `--coverflow-scale-side` | `.78` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
+| `--coverflow-rotate` | `34deg` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
+| `--coverflow-translate-z` | `-150px` | arretramento in Z | laterali più lontane/dietro (più negativo) |
+| `--coverflow-offset-x` | `1.0` | spostamento laterale (frazione della card) | le ±1 sporgono di più accanto alla centrale |
 
 > Nota: `--coverflow-card-width` / `--coverflow-card-height` usano `clamp()` e non
 > sono leggibili direttamente dal JS; la larghezza viene quindi **misurata** dalla
@@ -87,6 +80,19 @@ Il JS le rilegge da lì: **basta cambiarle qui**, non serve toccare il JavaScrip
 > L'immagine della card riempie automaticamente lo spazio sopra al testo
 > (`.dish__img { flex: 1 1 auto }`), quindi cambiando `--coverflow-card-height` la
 > foto si adatta senza deformarsi.
+
+### Simmetria e contenimento (due scelte importanti)
+
+- **Il carosello parte da una card CENTRALE, non dalla prima.** In JS l'init è
+  `setActive(Math.floor((cards.length - 1) / 2))`. Un coverflow senza loop è
+  simmetrico solo quando la card attiva ha vicini a *entrambi* i lati: partendo da
+  indice 0 non ci sono card a sinistra e la composizione sembra sbilanciata a
+  destra. Partendo dal centro, la prima impressione è simmetrica.
+- **Il `.coverflow` esce dal container di testo (max 1200px) e usa `width:100vw`**
+  (`margin-left/right: calc(50% - 50vw)`), così le card adiacenti hanno spazio e
+  non vengono tagliate ai bordi. Le card offset ≥3 restano nascoste
+  (`opacity:0; pointer-events:none`), quindi la pagina non va mai in overflow
+  orizzontale.
 
 I valori sono ritoccati automaticamente per **tablet** (≤1024px, 3D attenuato) e
 **mobile** (≤640px, card centrale larga, effetto ridotto, frecce nascoste) nei

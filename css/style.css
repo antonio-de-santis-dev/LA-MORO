@@ -353,15 +353,21 @@ body:not(.intro-done) { overflow: hidden; }
    il JS le legge da .coverflow e ricalcola le trasformazioni delle card. */
 .coverflow {
   --coverflow-speed: .5s;                                    /* durata transizione card */
-  --coverflow-card-width: clamp(230px, 26vw, 380px);         /* larghezza card (scala col viewport) */
-  --coverflow-card-height: clamp(350px, 30vw, 450px);        /* altezza card (indipendente dalla larghezza) */
+  --coverflow-card-width: clamp(250px, 28vw, 400px);         /* larghezza card (scala col viewport) */
+  --coverflow-card-height: clamp(370px, 31vw, 460px);        /* altezza card (indipendente dalla larghezza) */
   --coverflow-perspective: 1500px;                           /* profondità prospettica */
-  --coverflow-scale-side: .76;                               /* scala delle card adiacenti (offset ±1) */
-  --coverflow-rotate: 33deg;                                 /* angolo rotateY delle laterali */
-  --coverflow-translate-z: -130px;                           /* arretramento in Z delle laterali */
-  --coverflow-offset-x: 1.05; /* spostamento laterale (frazione card): tiene le ±1 visibili accanto alla centrale */
+  --coverflow-scale-side: .78;                               /* scala delle card adiacenti (offset ±1) */
+  --coverflow-rotate: 34deg;                                 /* angolo rotateY delle laterali */
+  --coverflow-translate-z: -150px;                           /* arretramento in Z delle laterali */
+  --coverflow-offset-x: 1.0;  /* spostamento laterale (frazione card): tiene le ±1 visibili accanto alla centrale */
   position: relative;
   padding: clamp(20px, 4vh, 48px) 0;   /* respiro verticale sopra/sotto */
+  /* esce dal container di testo (max 1200px) e usa tutta la larghezza: così le
+     card adiacenti hanno spazio e non vengono tagliate. Le card offset ≥3 restano
+     nascoste, quindi la pagina non va mai in overflow orizzontale. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
   /* lo swipe orizzontale guida il carosello, quello verticale scrolla la pagina */
   touch-action: pan-y;
 }
@@ -564,7 +570,7 @@ body.modal-open { overflow: hidden; }
   .coverflow {
     --coverflow-card-width: clamp(230px, 34vw, 340px);
     --coverflow-perspective: 1250px; --coverflow-rotate: 30deg;
-    --coverflow-translate-z: -120px; --coverflow-offset-x: .92; --coverflow-scale-side: .78;
+    --coverflow-translate-z: -130px; --coverflow-offset-x: .9; --coverflow-scale-side: .78;
   }
 }
 @media (max-width: 640px) {

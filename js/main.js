@@ -230,8 +230,9 @@
         card.style.zIndex = '90';
         return;
       }
-      // lateral: ±2 only slightly further out than ±1 (evita che le ±2 sfuggano
-      // ai lati); profondità: ±2 MOLTO più arretrate, così la gerarchia si legge
+      // simmetrico per costruzione (dipende solo da |a| e dal segno).
+      // ±2: poco più larghe delle ±1 (lateral) ma MOLTO più arretrate (depth),
+      // così restano un accenno dietro e non sfuggono ai lati.
       var lateral = aa <= 1 ? aa : 1 + (aa - 1) * 0.42;
       var depth   = aa <= 1 ? aa : 1 + (aa - 1) * 1.4;
       var tx = sign * cardW * offsetRatio * lateral;
@@ -402,8 +403,9 @@
       });
     }
 
-    // init
-    setActive(0);
+    // init: parte da una card CENTRALE, non dalla prima, così la vista iniziale
+    // è simmetrica (adiacenti a sinistra e a destra) invece che sbilanciata a destra
+    setActive(Math.floor((cards.length - 1) / 2));
   })();
 
   /* ---------- FOOTER YEAR ---------- */
