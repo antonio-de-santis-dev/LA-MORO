@@ -404,8 +404,21 @@
     }
 
     // init: parte da una card CENTRALE, non dalla prima, così la vista iniziale
-    // è simmetrica (adiacenti a sinistra e a destra) invece che sbilanciata a destra
+    // è simmetrica (adiacenti a sinistra e a destra) invece che sbilanciata a destra.
+    //
+    // Anti-FOUC: il PRIMO posizionamento avviene con le transizioni spente
+    // (classe .no-transition) e le card ancora invisibili (.coverflow è opacity:0).
+    // Così le card non animano dallo stato impilato iniziale (transform:none) verso
+    // la geometria Coverflow: sono già distese al primo paint. Dopo un reflow forzato
+    // riattiviamo le transizioni e, dentro un requestAnimationFrame, sveliamo il
+    // carosello con .is-ready (fade opacity). Nessun flash impilato è mai visibile.
+    stage.classList.add('no-transition');
     setActive(Math.floor((cards.length - 1) / 2));
+    void stage.offsetWidth;                 // reflow: "congela" le posizioni appena impostate
+    stage.classList.remove('no-transition');
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () { root.classList.add('is-ready'); });
+    });
   })();
 
   /* ---------- FOOTER YEAR ---------- */
