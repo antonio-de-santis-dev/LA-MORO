@@ -62,19 +62,24 @@ Cambiare card = cambiare `active` e richiamare `render()`: la transizione CSS
 Stanno in `css/style.css`, sul selettore **`.coverflow`** (sono variabili CSS).
 Il JS le rilegge da lì: **basta cambiarle qui**, non serve toccare il JavaScript.
 
-| Variabile | Cosa fa | Se la aumento… |
-|---|---|---|
-| `--coverflow-speed` | durata transizione | il cambio card è più lento/morbido |
-| `--coverflow-card-width` | larghezza card | card più grandi (l'altezza si adegua) |
-| `--coverflow-perspective` | profondità prospettica | 3D più "piatto" (valore alto) o più marcato (basso) |
-| `--coverflow-scale-side` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
-| `--coverflow-rotate` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
-| `--coverflow-translate-z` | arretramento in Z | laterali più lontane/dietro (più negativo) |
-| `--coverflow-offset-x` | spostamento laterale (frazione della card) | card più distanziate o più sovrapposte |
+| Variabile | Valore desktop | Cosa fa | Se la aumento… |
+|---|---|---|---|
+| `--coverflow-speed` | `.5s` | durata transizione | il cambio card è più lento/morbido |
+| `--coverflow-card-width` | `clamp(250px, 30vw, 430px)` | larghezza card (scala col viewport) | card più grandi |
+| `--coverflow-card-height` | `clamp(370px, 33vw, 480px)` | altezza card (indipendente dalla larghezza) | card più alte |
+| `--coverflow-perspective` | `1600px` | profondità prospettica | 3D più "piatto" (valore alto) o più marcato (basso) |
+| `--coverflow-scale-side` | `.82` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
+| `--coverflow-rotate` | `40deg` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
+| `--coverflow-translate-z` | `-200px` | arretramento in Z | laterali più lontane/dietro (più negativo) |
+| `--coverflow-offset-x` | `.60` | spostamento laterale (frazione della card) | card più distanziate o più sovrapposte |
 
-> Nota tecnica: `--coverflow-card-width` usa `clamp()` e non è leggibile
-> direttamente dal JS, quindi la larghezza viene **misurata** dalla card reale.
-> Tutte le altre variabili vengono lette come numeri.
+> Nota: `--coverflow-card-width` / `--coverflow-card-height` usano `clamp()` e non
+> sono leggibili direttamente dal JS; la larghezza viene quindi **misurata** dalla
+> card reale. Le altre variabili sono lette come numeri.
+>
+> L'immagine della card riempie automaticamente lo spazio sopra al testo
+> (`.dish__img { flex: 1 1 auto }`), quindi cambiando `--coverflow-card-height` la
+> foto si adatta senza deformarsi.
 
 I valori sono ritoccati automaticamente per **tablet** (≤1024px, 3D attenuato) e
 **mobile** (≤640px, card centrale larga, effetto ridotto, frecce nascoste) nei
@@ -121,3 +126,20 @@ Non serve modificare CSS o JS: il carosello si adatta al numero di card.
 - `prefers-reduced-motion`: con questa impostazione il 3D si appiattisce
   automaticamente (niente rotazioni/profondità) e le transizioni si annullano.
   È voluto: non forzare le animazioni.
+
+## 6. Due trappole tecniche da NON reintrodurre
+
+Due dettagli fanno funzionare click e swipe. Se li togli, si rompono di nuovo:
+
+- **NIENTE `setPointerCapture` nel drag.** Catturare il puntatore sulla viewport
+  dirotta l'evento `click` lontano dalla card, così il modal non si apre più. Il
+  drag usa invece listener `pointermove`/`pointerup` su `window` (funziona anche
+  se il puntatore esce dall'area) e il `click` sulla card resta intatto.
+- **`touch-action: pan-y` DEVE stare anche sulle card** (`.coverflow__card`), non
+  solo sulla viewport. La card è l'elemento in cima che riceve il tocco: senza
+  `pan-y` su di essa il browser gestisce lo swipe orizzontale come gesto proprio e
+  non manda i `pointermove` al JS → su mobile lo swipe non cambia card. Con `pan-y`
+  lo swipe orizzontale muove il carosello e quello verticale scrolla la pagina.
+- La soglia drag/click è `DRAG_THRESHOLD = 8px` in `js/main.js`: sotto quella
+  soglia il gesto è un click (apre il modal / centra la card), sopra è un drag.
+  Abbassarla troppo fa scambiare i click per micro-drag.
