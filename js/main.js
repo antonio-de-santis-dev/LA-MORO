@@ -294,34 +294,53 @@
     });
 
     // drag / swipe (Pointer Events: mouse + touch)
-    var down = false, startX = 0, stepPx = 200;
-    viewport.addEventListener('pointerdown', function (e) {
-      if (e.button && e.button !== 0) return;
-      down = true; dragMoved = false; startX = e.clientX;
-      readTuning();
-      stepPx = Math.max(80, cardW * offsetRatio * 1.5);
-      stage.classList.add('is-dragging');
-      try { viewport.setPointerCapture(e.pointerId); } catch (err) {}
-    });
-    viewport.addEventListener('pointermove', function (e) {
+    // NB: NIENTE setPointerCapture — cattura il puntatore e dirotta l'evento
+    // 'click' lontano dalla card, impedendo l'apertura del modal. Usiamo invece
+    // listener a livello di window, così il drag continua anche se il puntatore
+    // esce dalla viewport e il click sulla card resta integro.
+    var DRAG_THRESHOLD = 8;   // px prima che un movimento conti come drag (non click)
+    var down = false, startX = 0, stepPx = 200, dragging = false;
+
+    function onPointerMove(e) {
       if (!down) return;
       var dx = e.clientX - startX;
-      if (Math.abs(dx) > 6) dragMoved = true;
-      var offset = -dx / stepPx;
-      var center = LOOP ? active + offset : Math.max(0, Math.min(cards.length - 1, active + offset));
-      render(center);
-    });
-    function endDrag(e) {
+      if (!dragging && Math.abs(dx) > DRAG_THRESHOLD) {
+        dragging = true; dragMoved = true;
+        stage.classList.add('is-dragging');
+      }
+      if (dragging) {
+        var offset = -dx / stepPx;
+        var center = LOOP ? active + offset : Math.max(0, Math.min(cards.length - 1, active + offset));
+        render(center);
+      }
+    }
+    function onPointerUp(e) {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
       if (!down) return;
       down = false;
-      stage.classList.remove('is-dragging');
-      var dx = (e && typeof e.clientX === 'number') ? e.clientX - startX : 0;
-      var offset = -dx / stepPx;
-      if (Math.abs(offset) < 0.25) setActive(active);          // sotto soglia: torna indietro
-      else setActive(active + (offset > 0 ? Math.ceil(offset) : Math.floor(offset)));
+      if (dragging) {
+        stage.classList.remove('is-dragging');
+        var dx = (e && typeof e.clientX === 'number') ? e.clientX - startX : 0;
+        var offset = -dx / stepPx;
+        if (Math.abs(offset) < 0.25) setActive(active);        // sotto soglia: torna indietro
+        else setActive(active + (offset > 0 ? Math.ceil(offset) : Math.floor(offset)));
+      }
+      dragging = false;
+      // se non è stato un drag, non facciamo nulla: parte il 'click' che apre il
+      // modal (card attiva) o centra la card (card laterale)
     }
-    viewport.addEventListener('pointerup', endDrag);
-    viewport.addEventListener('pointercancel', endDrag);
+    viewport.addEventListener('pointerdown', function (e) {
+      if (e.button && e.button !== 0) return;
+      down = true; dragMoved = false; dragging = false;
+      startX = e.clientX;
+      readTuning();
+      stepPx = Math.max(80, cardW * offsetRatio * 1.5);
+      window.addEventListener('pointermove', onPointerMove);
+      window.addEventListener('pointerup', onPointerUp);
+      window.addEventListener('pointercancel', onPointerUp);
+    });
 
     window.addEventListener('resize', function () { setActive(active); }, { passive: true });
 
