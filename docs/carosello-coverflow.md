@@ -65,13 +65,21 @@ Il JS le rilegge da lì: **basta cambiarle qui**, non serve toccare il JavaScrip
 | Variabile | Valore desktop | Cosa fa | Se la aumento… |
 |---|---|---|---|
 | `--coverflow-speed` | `.5s` | durata transizione | il cambio card è più lento/morbido |
-| `--coverflow-card-width` | `clamp(250px, 28vw, 400px)` | larghezza card (scala col viewport) | card più grandi |
-| `--coverflow-card-height` | `clamp(370px, 31vw, 460px)` | altezza card (indipendente dalla larghezza) | card più alte |
-| `--coverflow-perspective` | `1500px` | profondità prospettica | 3D più "piatto" (valore alto) o più marcato (basso) |
-| `--coverflow-scale-side` | `.78` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
-| `--coverflow-rotate` | `34deg` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
-| `--coverflow-translate-z` | `-150px` | arretramento in Z | laterali più lontane/dietro (più negativo) |
-| `--coverflow-offset-x` | `1.0` | spostamento laterale (frazione della card) | le ±1 sporgono di più accanto alla centrale |
+| `--coverflow-card-width` | `clamp(320px, 40vw, 620px)` | larghezza card centrale (scala col viewport) | card più grandi |
+| `--coverflow-card-height` | `clamp(410px, 35vw, 540px)` | altezza card (indipendente dalla larghezza) | card più alte |
+| `--coverflow-perspective` | `1650px` | profondità prospettica | 3D più "piatto" (valore alto) o più marcato (basso) |
+| `--coverflow-scale-side` | `.72` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
+| `--coverflow-rotate` | `42deg` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
+| `--coverflow-translate-z` | `-230px` | arretramento in Z | laterali più lontane/dietro (più negativo) |
+| `--coverflow-offset-x` | `.66` | spostamento laterale (frazione della card) | le ±1 sporgono di più accanto alla centrale |
+
+> La card centrale è volutamente **grande e dominante** (~40% della larghezza a
+> 1440px), perfettamente centrata (`left:50%` + `margin-left:-width/2`). Le
+> adiacenti sono più piccole (`scale-side .72`), più arretrate (`translate-z
+> -230px`) e più inclinate (`rotate 42deg`), così **si leggono chiaramente come
+> "dietro"** senza mai essere tagliate. I valori sono stati calibrati insieme:
+> se cambi la larghezza, ricontrolla `offset-x` (quanto sporgono le ±1) e
+> `scale-side` per non far uscire le card dai bordi.
 
 > Nota: `--coverflow-card-width` / `--coverflow-card-height` usano `clamp()` e non
 > sono leggibili direttamente dal JS; la larghezza viene quindi **misurata** dalla
@@ -97,6 +105,32 @@ Il JS le rilegge da lì: **basta cambiarle qui**, non serve toccare il JavaScrip
 I valori sono ritoccati automaticamente per **tablet** (≤1024px, 3D attenuato) e
 **mobile** (≤640px, card centrale larga, effetto ridotto, frecce nascoste) nei
 rispettivi `@media`.
+
+### Niente "flash impilato" al caricamento (anti-FOUC)
+
+Le card sono posizionate in assoluto e centrate: **prima** che il JS calcoli le
+trasformazioni, avrebbero `transform:none` e si sovrapporrebbero tutte al centro
+(un mazzo di carte impilato). Se le lasciassimo visibili, al primo caricamento si
+vedrebbe per un istante quel mazzo che poi "salta" nella disposizione Coverflow —
+un classico FOUC. Per evitarlo, tre accorgimenti lavorano insieme:
+
+1. **`.coverflow` parte `opacity:0`** (in CSS): finché il JS non ha posizionato le
+   card, il carosello è invisibile.
+2. **Primo posizionamento con transizioni spente.** In `initCoverflow()` la stage
+   riceve la classe `.no-transition` (che azzera la `transition` delle card),
+   poi si chiama `setActive(centro)`. Così le card assumono subito la posizione
+   finale **senza animare** dallo stato impilato. Un `void stage.offsetWidth`
+   forza un *reflow* che "congela" quelle posizioni, quindi `.no-transition`
+   viene rimossa (le transizioni tornano attive per i movimenti successivi).
+3. **Reveal morbido con `.is-ready`.** Dentro un `requestAnimationFrame` (doppio,
+   per essere certi che il paint sia avvenuto) si aggiunge `.coverflow.is-ready`,
+   che porta l'opacità a 1 con un fade di `.32s`. Al primo paint visibile le card
+   sono **già** nella geometria Coverflow: nessuno stato impilato è mai visibile.
+
+In pratica: `opacity:0` → posiziono senza transizione → reflow → riattivo le
+transizioni → `requestAnimationFrame` → `.is-ready` (fade-in). Se tocchi questa
+sequenza, ricontrolla **ricaricando la pagina più volte** guardando i primi
+istanti.
 
 ## 4. Aggiungere o togliere un piatto
 

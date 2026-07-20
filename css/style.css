@@ -353,13 +353,13 @@ body:not(.intro-done) { overflow: hidden; }
    il JS le legge da .coverflow e ricalcola le trasformazioni delle card. */
 .coverflow {
   --coverflow-speed: .5s;                                    /* durata transizione card */
-  --coverflow-card-width: clamp(250px, 28vw, 400px);         /* larghezza card (scala col viewport) */
-  --coverflow-card-height: clamp(370px, 31vw, 460px);        /* altezza card (indipendente dalla larghezza) */
-  --coverflow-perspective: 1500px;                           /* profondità prospettica */
-  --coverflow-scale-side: .78;                               /* scala delle card adiacenti (offset ±1) */
-  --coverflow-rotate: 34deg;                                 /* angolo rotateY delle laterali */
-  --coverflow-translate-z: -150px;                           /* arretramento in Z delle laterali */
-  --coverflow-offset-x: 1.0;  /* spostamento laterale (frazione card): tiene le ±1 visibili accanto alla centrale */
+  --coverflow-card-width: clamp(320px, 40vw, 620px);         /* larghezza card centrale (scala col viewport) */
+  --coverflow-card-height: clamp(410px, 35vw, 540px);        /* altezza card (indipendente dalla larghezza) */
+  --coverflow-perspective: 1650px;                           /* profondità prospettica */
+  --coverflow-scale-side: .72;                               /* scala delle card adiacenti (offset ±1) */
+  --coverflow-rotate: 42deg;                                 /* angolo rotateY delle laterali */
+  --coverflow-translate-z: -230px;                           /* arretramento in Z delle laterali */
+  --coverflow-offset-x: .66;  /* spostamento laterale (frazione card): tiene le ±1 visibili accanto alla centrale */
   position: relative;
   padding: clamp(20px, 4vh, 48px) 0;   /* respiro verticale sopra/sotto */
   /* esce dal container di testo (max 1200px) e usa tutta la larghezza: così le
@@ -370,7 +370,16 @@ body:not(.intro-done) { overflow: hidden; }
   margin-right: calc(50% - 50vw);
   /* lo swipe orizzontale guida il carosello, quello verticale scrolla la pagina */
   touch-action: pan-y;
+  /* --- anti-FOUC: le card sono invisibili finché il JS non le posiziona nella
+     geometria Coverflow. Il JS aggiunge .is-ready dopo il primo posizionamento
+     (transizioni disattivate + reflow), così NON si vede mai lo stato impilato. */
+  opacity: 0;
+  transition: opacity .32s ease;
 }
+.coverflow.is-ready { opacity: 1; }
+/* durante il PRIMO posizionamento le transizioni delle card sono spente: le card
+   compaiono già distese, senza animare dallo stato impilato (transform:none) */
+.coverflow__stage.no-transition .coverflow__card { transition: none !important; }
 .coverflow__viewport {
   position: relative; overflow: hidden; padding: 26px 0;
   touch-action: pan-y;
@@ -568,9 +577,9 @@ body.modal-open { overflow: hidden; }
 @media (max-width: 1024px) {
   /* tablet: ~1 card per lato, effetto 3D attenuato ma adiacenti ben visibili */
   .coverflow {
-    --coverflow-card-width: clamp(230px, 34vw, 340px);
-    --coverflow-perspective: 1250px; --coverflow-rotate: 30deg;
-    --coverflow-translate-z: -130px; --coverflow-offset-x: .9; --coverflow-scale-side: .78;
+    --coverflow-card-width: clamp(280px, 44vw, 440px);
+    --coverflow-perspective: 1350px; --coverflow-rotate: 36deg;
+    --coverflow-translate-z: -175px; --coverflow-offset-x: .7; --coverflow-scale-side: .74;
   }
 }
 @media (max-width: 640px) {
