@@ -230,11 +230,16 @@
         card.style.zIndex = '90';
         return;
       }
-      var tx = sign * cardW * offsetRatio * (aa <= 1 ? aa : 1 + (aa - 1) * 0.82);
-      var tz = reduceMotion ? 0 : tzBase * Math.min(aa, 2);
+      // simmetrico per costruzione (dipende solo da |a| e dal segno).
+      // ±2: poco più larghe delle ±1 (lateral) ma MOLTO più arretrate (depth),
+      // così restano un accenno dietro e non sfuggono ai lati.
+      var lateral = aa <= 1 ? aa : 1 + (aa - 1) * 0.42;
+      var depth   = aa <= 1 ? aa : 1 + (aa - 1) * 1.4;
+      var tx = sign * cardW * offsetRatio * lateral;
+      var tz = reduceMotion ? 0 : tzBase * depth;
       var ry = reduceMotion ? 0 : -sign * rotate * Math.min(aa, 1);
-      var sc = aa <= 1 ? 1 - (1 - scaleSide) * aa : Math.max(0.6, scaleSide - (aa - 1) * 0.09);
-      var op = aa <= 1 ? 1 - 0.3 * aa : (aa <= 2 ? 0.7 - 0.3 * (aa - 1) : Math.max(0, 0.4 - 0.4 * (aa - 2)));
+      var sc = aa <= 1 ? 1 - (1 - scaleSide) * aa : Math.max(0.55, scaleSide - (aa - 1) * 0.14);
+      var op = aa <= 1 ? 1 - 0.28 * aa : Math.max(0, 0.72 - 0.45 * (aa - 1));
       card.style.transform =
         'translateX(' + tx.toFixed(1) + 'px) translateZ(' + tz.toFixed(1) + 'px) rotateY(' + ry.toFixed(2) + 'deg) scale(' + sc.toFixed(3) + ')';
       card.style.opacity = op.toFixed(3);
@@ -398,8 +403,9 @@
       });
     }
 
-    // init
-    setActive(0);
+    // init: parte da una card CENTRALE, non dalla prima, così la vista iniziale
+    // è simmetrica (adiacenti a sinistra e a destra) invece che sbilanciata a destra
+    setActive(Math.floor((cards.length - 1) / 2));
   })();
 
   /* ---------- FOOTER YEAR ---------- */

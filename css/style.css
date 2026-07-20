@@ -353,15 +353,21 @@ body:not(.intro-done) { overflow: hidden; }
    il JS le legge da .coverflow e ricalcola le trasformazioni delle card. */
 .coverflow {
   --coverflow-speed: .5s;                                    /* durata transizione card */
-  --coverflow-card-width: clamp(250px, 30vw, 430px);         /* larghezza card (scala col viewport) */
-  --coverflow-card-height: clamp(370px, 33vw, 480px);        /* altezza card (indipendente dalla larghezza) */
-  --coverflow-perspective: 1600px;                           /* profondità prospettica */
-  --coverflow-scale-side: .82;                               /* scala delle card adiacenti (offset ±1) */
-  --coverflow-rotate: 40deg;                                 /* angolo rotateY delle laterali */
-  --coverflow-translate-z: -200px;                           /* arretramento in Z delle laterali */
-  --coverflow-offset-x: .60;  /* spostamento laterale tra card, in frazione della larghezza card */
+  --coverflow-card-width: clamp(250px, 28vw, 400px);         /* larghezza card (scala col viewport) */
+  --coverflow-card-height: clamp(370px, 31vw, 460px);        /* altezza card (indipendente dalla larghezza) */
+  --coverflow-perspective: 1500px;                           /* profondità prospettica */
+  --coverflow-scale-side: .78;                               /* scala delle card adiacenti (offset ±1) */
+  --coverflow-rotate: 34deg;                                 /* angolo rotateY delle laterali */
+  --coverflow-translate-z: -150px;                           /* arretramento in Z delle laterali */
+  --coverflow-offset-x: 1.0;  /* spostamento laterale (frazione card): tiene le ±1 visibili accanto alla centrale */
   position: relative;
-  padding: 6px 0 4px;
+  padding: clamp(20px, 4vh, 48px) 0;   /* respiro verticale sopra/sotto */
+  /* esce dal container di testo (max 1200px) e usa tutta la larghezza: così le
+     card adiacenti hanno spazio e non vengono tagliate. Le card offset ≥3 restano
+     nascoste, quindi la pagina non va mai in overflow orizzontale. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
   /* lo swipe orizzontale guida il carosello, quello verticale scrolla la pagina */
   touch-action: pan-y;
 }
@@ -560,18 +566,19 @@ body.modal-open { overflow: hidden; }
    RESPONSIVE
    ===================================================================== */
 @media (max-width: 1024px) {
-  /* tablet: ~1 card per lato, effetto 3D attenuato */
+  /* tablet: ~1 card per lato, effetto 3D attenuato ma adiacenti ben visibili */
   .coverflow {
-    --coverflow-perspective: 1150px; --coverflow-rotate: 32deg;
-    --coverflow-translate-z: -140px; --coverflow-offset-x: .54;
+    --coverflow-card-width: clamp(230px, 34vw, 340px);
+    --coverflow-perspective: 1250px; --coverflow-rotate: 30deg;
+    --coverflow-translate-z: -130px; --coverflow-offset-x: .9; --coverflow-scale-side: .78;
   }
 }
 @media (max-width: 640px) {
   /* mobile: card centrale larga, adiacenti appena accennate, 3D ridotto, niente frecce */
   .coverflow {
-    --coverflow-card-width: 76vw; --coverflow-perspective: 900px;
-    --coverflow-rotate: 20deg; --coverflow-translate-z: -80px;
-    --coverflow-offset-x: .6; --coverflow-scale-side: .82;
+    --coverflow-card-width: 74vw; --coverflow-perspective: 950px;
+    --coverflow-rotate: 18deg; --coverflow-translate-z: -70px;
+    --coverflow-offset-x: .72; --coverflow-scale-side: .8;
   }
   .coverflow__arrow { display: none; }
 }
