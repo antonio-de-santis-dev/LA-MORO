@@ -359,7 +359,12 @@ body:not(.intro-done) { overflow: hidden; }
   --coverflow-scale-side: .72;                               /* scala delle card adiacenti (offset ±1) */
   --coverflow-rotate: 42deg;                                 /* angolo rotateY delle laterali */
   --coverflow-translate-z: -230px;                           /* arretramento in Z delle laterali */
-  --coverflow-offset-x: .66;  /* spostamento laterale (frazione card): tiene le ±1 visibili accanto alla centrale */
+  --coverflow-offset-x: .85;  /* spostamento laterale ESPRESSO IN FRAZIONI DELLA LARGHEZZA CARD
+     (JS: translateX = card-width × offset-x). A .85 le ±1 si dispongono AI LATI della centrale,
+     chiaramente staccate, con un piccolo overlap ordinato (~15px) tipico del Coverflow e senza
+     mai uscire dal viewport. Essendo una frazione della larghezza card, la spaziatura si adatta
+     da sola se la card cambia dimensione. NB: richiede il fix in main.js che misura la larghezza
+     card con offsetWidth (non getBoundingClientRect, falsata dalla transform 3D). */
   position: relative;
   padding: clamp(20px, 4vh, 48px) 0;   /* respiro verticale sopra/sotto */
   /* esce dal container di testo (max 1200px) e usa tutta la larghezza: così le
@@ -579,7 +584,7 @@ body.modal-open { overflow: hidden; }
   .coverflow {
     --coverflow-card-width: clamp(280px, 44vw, 440px);
     --coverflow-perspective: 1350px; --coverflow-rotate: 36deg;
-    --coverflow-translate-z: -175px; --coverflow-offset-x: .7; --coverflow-scale-side: .74;
+    --coverflow-translate-z: -175px; --coverflow-offset-x: .8; --coverflow-scale-side: .74;
   }
 }
 @media (max-width: 640px) {

@@ -71,7 +71,7 @@ Il JS le rilegge da lì: **basta cambiarle qui**, non serve toccare il JavaScrip
 | `--coverflow-scale-side` | `.72` | scala delle adiacenti | laterali più grandi (vicino a 1) o più piccole |
 | `--coverflow-rotate` | `42deg` | angolo `rotateY` laterali | inclinazione più forte delle card laterali |
 | `--coverflow-translate-z` | `-230px` | arretramento in Z | laterali più lontane/dietro (più negativo) |
-| `--coverflow-offset-x` | `.66` | spostamento laterale (frazione della card) | le ±1 sporgono di più accanto alla centrale |
+| `--coverflow-offset-x` | `.85` | spostamento laterale (**frazione della larghezza card**) | le ±1 si spostano più in fuori, staccandosi dalla centrale |
 
 > La card centrale è volutamente **grande e dominante** (~40% della larghezza a
 > 1440px), perfettamente centrata (`left:50%` + `margin-left:-width/2`). Le
@@ -81,9 +81,20 @@ Il JS le rilegge da lì: **basta cambiarle qui**, non serve toccare il JavaScrip
 > se cambi la larghezza, ricontrolla `offset-x` (quanto sporgono le ±1) e
 > `scale-side` per non far uscire le card dai bordi.
 
+> **Spaziatura laterale legata alla larghezza.** `--coverflow-offset-x` è una
+> *frazione della larghezza card*: il JS calcola `translateX = card-width ×
+> offset-x`. Così, se la card cambia dimensione, la distanza delle ±1 si adegua da
+> sola. A `.85` le adiacenti si dispongono ai lati con un piccolo overlap ordinato
+> (~15px) e restano dentro il viewport. Con card grandi un offset **troppo piccolo**
+> (< ~.7) fa infilare le ±1 *sotto* la centrale (si ammassano); uno **troppo grande**
+> (> ~1.0) le spinge fuori dai bordi. Il tablet usa `.8`, il mobile `.72`.
+
 > Nota: `--coverflow-card-width` / `--coverflow-card-height` usano `clamp()` e non
 > sono leggibili direttamente dal JS; la larghezza viene quindi **misurata** dalla
-> card reale. Le altre variabili sono lette come numeri.
+> card reale con `offsetWidth` (la *larghezza di layout*, che **ignora la transform
+> 3D**). Non si usa `getBoundingClientRect().width` perché su una card già
+> scalata/ruotata restituirebbe la larghezza *proiettata* (più piccola), falsando il
+> calcolo di `translateX`. Le altre variabili sono lette come numeri.
 >
 > L'immagine della card riempie automaticamente lo spazio sopra al testo
 > (`.dish__img { flex: 1 1 auto }`), quindi cambiando `--coverflow-card-height` la
