@@ -163,16 +163,24 @@
       // se non è stato un drag, non facciamo nulla: parte il 'click' che apre il
       // modal (card attiva) o centra la card (card laterale)
     }
-    viewport.addEventListener('pointerdown', function (e) {
-      if (e.button && e.button !== 0) return;
-      down = true; dragMoved = false; dragging = false;
-      startX = e.clientX;
-      readTuning();
-      stepPx = Math.max(80, cardW * offsetRatio * 1.5);
-      window.addEventListener('pointermove', onPointerMove);
-      window.addEventListener('pointerup', onPointerUp);
-      window.addEventListener('pointercancel', onPointerUp);
-    });
+    // guardia su viewport (unico elemento del coverflow non garantito, a
+    // differenza di root/stage/cards già guardati sopra): se .coverflow__viewport
+    // mancasse, senza questo controllo addEventListener lancerebbe e, con le init
+    // sequenziali in main.js, bloccherebbe il codice successivo (es. anno footer).
+    // Con l'elemento presente (caso reale) il comportamento è identico a prima;
+    // se assente il drag è disattivato ma frecce/tastiera/posizionamento restano.
+    if (viewport) {
+      viewport.addEventListener('pointerdown', function (e) {
+        if (e.button && e.button !== 0) return;
+        down = true; dragMoved = false; dragging = false;
+        startX = e.clientX;
+        readTuning();
+        stepPx = Math.max(80, cardW * offsetRatio * 1.5);
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointercancel', onPointerUp);
+      });
+    }
 
     window.addEventListener('resize', function () { setActive(active); }, { passive: true });
 
