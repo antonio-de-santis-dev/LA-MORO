@@ -425,6 +425,100 @@
     });
   })();
 
+  /* ---------- SOTTO PRENOTAZIONE (tabs verticali) ---------- */
+  (function initPrenota() {
+    var tablist = document.querySelector('.prenota__tags');
+    var panel = document.getElementById('prenotaPanel');
+    if (!tablist || !panel) return;
+    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+    if (!tabs.length) return;
+
+    // NUMERO DI TELEFONO — placeholder. Da sostituire QUI, in un UNICO punto,
+    // col numero reale (es. '+393209677022'). Il link tel: viene generato da qui.
+    var PRENOTA_TEL = '+390000000000';
+
+    // dati prodotti (facili da modificare): nome, prezzo, unità, descrizione IT, EN
+    var PRODOTTI = [
+      { nome: 'Agnello',             prezzo: '€ 15,00', unita: 'a porzione', it: '',                     en: '' },
+      { nome: 'Pollo ruspante',      prezzo: '€ 15,00', unita: 'a porzione', it: '',                     en: '' },
+      { nome: 'Coniglio',            prezzo: '€ 13,00', unita: 'a porzione', it: '',                     en: '' },
+      { nome: 'Pezzetti di cavallo', prezzo: '€ 14,00', unita: 'a porzione', it: '',                     en: '' },
+      { nome: 'Bruscatizzi',         prezzo: '€ 13,00', unita: '',           it: 'interiora di agnello', en: 'Lamb offal' },
+      { nome: 'Municeddhe',          prezzo: '€ 11,00', unita: '',           it: 'lumache di terra',     en: 'Land snails' }
+    ];
+
+    var swap    = document.getElementById('prenotaSwap');
+    var elName   = document.getElementById('prenotaName');
+    var elAmount = document.getElementById('prenotaAmount');
+    var elUnit   = document.getElementById('prenotaUnit');
+    var elDesc   = document.getElementById('prenotaDesc');
+    var elEn     = document.getElementById('prenotaEn');
+    var callBtn  = document.getElementById('prenotaCall');
+
+    // numero centralizzato: un solo punto da cambiare
+    if (callBtn) callBtn.href = 'tel:' + PRENOTA_TEL;
+
+    var current = 0;
+    var swapTimer = null;
+
+    function fill(i) {
+      var p = PRODOTTI[i]; if (!p) return;
+      elName.textContent = p.nome;
+      elAmount.textContent = p.prezzo;
+      if (p.unita) { elUnit.textContent = p.unita; elUnit.hidden = false; }
+      else { elUnit.textContent = ''; elUnit.hidden = true; }
+      if (p.it) { elDesc.textContent = p.it; elDesc.hidden = false; }
+      else { elDesc.textContent = ''; elDesc.hidden = true; }
+      if (p.en) { elEn.textContent = p.en; elEn.hidden = false; }
+      else { elEn.textContent = ''; elEn.hidden = true; }
+      panel.setAttribute('aria-labelledby', tabs[i].id);
+    }
+
+    function selectTab(i, focusIt) {
+      i = (i + tabs.length) % tabs.length;            // wrap (frecce)
+      if (i === current) { if (focusIt) tabs[i].focus(); return; }
+      tabs.forEach(function (t, idx) {                // ARIA + roving tabindex + attivo
+        var on = idx === i;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.setAttribute('tabindex', on ? '0' : '-1');
+        t.classList.toggle('is-active', on);
+      });
+      if (focusIt) tabs[i].focus();
+      current = i;
+
+      // aggiorna il dettaglio: istantaneo con reduced-motion, altrimenti
+      // fade + leggero scorrimento (uscita più rapida dell'entrata)
+      if (reduceMotion) { fill(i); return; }
+      if (swapTimer) window.clearTimeout(swapTimer);
+      swap.classList.add('is-out');
+      swapTimer = window.setTimeout(function () {
+        fill(i);
+        void swap.offsetWidth;                        // reflow: fa ripartire la transizione
+        swap.classList.remove('is-out');
+      }, 160);
+    }
+
+    // click sui tag
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { selectTab(i, true); });
+    });
+
+    // tastiera (pattern tablist): su/giù — e sx/dx per la riga orizzontale mobile
+    tablist.addEventListener('keydown', function (e) {
+      switch (e.key) {
+        case 'ArrowDown':
+        case 'ArrowRight': e.preventDefault(); selectTab(current + 1, true); break;
+        case 'ArrowUp':
+        case 'ArrowLeft':  e.preventDefault(); selectTab(current - 1, true); break;
+        case 'Home':       e.preventDefault(); selectTab(0, true); break;
+        case 'End':        e.preventDefault(); selectTab(tabs.length - 1, true); break;
+      }
+    });
+
+    // stato iniziale coerente col markup (primo prodotto)
+    fill(0);
+  })();
+
   /* ---------- FOOTER YEAR ---------- */
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
