@@ -437,14 +437,16 @@
     // col numero reale (es. '+393209677022'). Il link tel: viene generato da qui.
     var PRENOTA_TEL = '+390000000000';
 
-    // dati prodotti (facili da modificare): nome, prezzo, unità, descrizione IT, EN
+    // dati prodotti (facili da modificare): nome, prezzo, unità, descrizione IT, EN,
+    // immagine (img) e testo alternativo (alt, descrittivo in italiano).
+    var IMG_DIR = 'assets/images/Imagini-i-piatti-su-prenotazione/';
     var PRODOTTI = [
-      { nome: 'Agnello',             prezzo: '€ 15,00', unita: 'a porzione', it: '',                     en: '' },
-      { nome: 'Pollo ruspante',      prezzo: '€ 15,00', unita: 'a porzione', it: '',                     en: '' },
-      { nome: 'Coniglio',            prezzo: '€ 13,00', unita: 'a porzione', it: '',                     en: '' },
-      { nome: 'Pezzetti di cavallo', prezzo: '€ 14,00', unita: 'a porzione', it: '',                     en: '' },
-      { nome: 'Bruscatizzi',         prezzo: '€ 13,00', unita: '',           it: 'interiora di agnello', en: 'Lamb offal' },
-      { nome: 'Municeddhe',          prezzo: '€ 11,00', unita: '',           it: 'lumache di terra',     en: 'Land snails' }
+      { nome: 'Agnello',             prezzo: '€ 15,00', unita: 'a porzione', it: '',                     en: '',           img: 'Agnello.png',                    alt: 'Un agnello in un prato fiorito' },
+      { nome: 'Pollo ruspante',      prezzo: '€ 15,00', unita: 'a porzione', it: '',                     en: '',           img: 'Polo-Ruspante.jpeg',             alt: 'Galline ruspanti in un campo' },
+      { nome: 'Coniglio',            prezzo: '€ 13,00', unita: 'a porzione', it: '',                     en: '',           img: 'coniglio-ariete.jpg',            alt: 'Un coniglio' },
+      { nome: 'Pezzetti di cavallo', prezzo: '€ 14,00', unita: 'a porzione', it: '',                     en: '',           img: 'Cavalo.jpeg',                    alt: 'Un cavallo al galoppo in un prato' },
+      { nome: 'Bruscatizzi',         prezzo: '€ 13,00', unita: '',           it: 'interiora di agnello', en: 'Lamb offal', img: 'turcinelli-puglia-ricetta.jpg',  alt: 'Turcinelli (interiora di agnello) alla brace' },
+      { nome: 'Municeddhe',          prezzo: '€ 11,00', unita: '',           it: 'lumache di terra',     en: 'Land snails',img: 'Municede.jpeg',                  alt: 'Municeddhe (lumache) in salsa di pomodoro' }
     ];
 
     var swap    = document.getElementById('prenotaSwap');
@@ -453,10 +455,15 @@
     var elUnit   = document.getElementById('prenotaUnit');
     var elDesc   = document.getElementById('prenotaDesc');
     var elEn     = document.getElementById('prenotaEn');
+    var elImg    = document.getElementById('prenotaImg');
     var callBtn  = document.getElementById('prenotaCall');
 
     // numero centralizzato: un solo punto da cambiare
     if (callBtn) callBtn.href = 'tel:' + PRENOTA_TEL;
+
+    // PRELOAD di tutte le immagini: al cambio prodotto la foto è già in cache,
+    // così il crossfade non mostra lampi bianchi né scatti di caricamento.
+    PRODOTTI.forEach(function (p) { var im = new Image(); im.src = IMG_DIR + p.img; });
 
     // MODELLO: attivazione MANUALE.
     //  - fixedIndex = prodotto FISSATO col click/Invio (unico con aria-selected)
@@ -480,6 +487,11 @@
       else { elDesc.textContent = ''; elDesc.hidden = true; }
       if (p.en) { elEn.textContent = p.en; elEn.hidden = false; }
       else { elEn.textContent = ''; elEn.hidden = true; }
+      // immagine del prodotto (già precaricata → nessun lampo bianco)
+      if (elImg) {
+        var src = IMG_DIR + p.img;
+        if (elImg.getAttribute('src') !== src) { elImg.src = src; elImg.alt = p.alt || p.nome; }
+      }
       // il pannello resta etichettato dal prodotto FISSATO (non dall'anteprima)
       panel.setAttribute('aria-labelledby', tabs[fixedIndex].id);
     }
