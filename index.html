@@ -247,7 +247,7 @@
     <section class="section prenota" id="sotto-prenotazione">
       <div class="container">
         <header class="section-head" data-reveal>
-          <p class="eyebrow"><span class="sprig" aria-hidden="true"></span> Sotto prenotazione</p>
+          <p class="eyebrow eyebrow--light"><span class="sprig" aria-hidden="true"></span> Sotto prenotazione</p>
           <h2>I piatti su prenotazione</h2>
           <p class="prenota__note">
             <span class="prenota__note-dot" aria-hidden="true"></span>
@@ -256,12 +256,12 @@
         </header>
 
         <div class="prenota__card" data-reveal>
-          <!-- COLONNA DESTRA (in alto su mobile) — tag/tablist dei prodotti -->
+          <!-- COLONNA SINISTRA (in alto su mobile) — tag/tablist dei prodotti -->
           <div class="prenota__tags" role="tablist" aria-orientation="vertical"
                aria-label="Scegli un piatto su prenotazione">
-            <!-- i <button role="tab"> sono generati/idratati dal JS a partire dai dati.
-                 Il primo è attivo di default; markup iniziale = primo prodotto. -->
-            <button class="prenota__tag is-active" role="tab" id="prenotaTab-0"
+            <!-- attivazione MANUALE: hover/focus = anteprima, click/Invio/Spazio = fissa.
+                 Il primo prodotto è fissato di default (aria-selected="true"). -->
+            <button class="prenota__tag" role="tab" id="prenotaTab-0"
                     aria-controls="prenotaPanel" aria-selected="true" tabindex="0" data-index="0">
               <span class="prenota__tag-label">Agnello</span>
               <span class="prenota__tag-dot" aria-hidden="true"></span>
@@ -293,7 +293,7 @@
             </button>
           </div>
 
-          <!-- COLONNA SINISTRA — dettaglio del prodotto selezionato -->
+          <!-- COLONNA DESTRA — dettaglio del prodotto (fissato o in anteprima) -->
           <div class="prenota__panel" id="prenotaPanel" role="tabpanel"
                aria-labelledby="prenotaTab-0" aria-live="polite" tabindex="0">
             <div class="prenota__swap" id="prenotaSwap">

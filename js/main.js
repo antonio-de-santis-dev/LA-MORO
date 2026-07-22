@@ -458,8 +458,17 @@
     // numero centralizzato: un solo punto da cambiare
     if (callBtn) callBtn.href = 'tel:' + PRENOTA_TEL;
 
-    var current = 0;
+    // MODELLO: attivazione MANUALE.
+    //  - fixedIndex = prodotto FISSATO col click/Invio (unico con aria-selected)
+    //  - shownIndex = prodotto attualmente MOSTRATO nel pannello (fissato o anteprima)
+    // hover/focus su un tag = ANTEPRIMA (cambia solo il pannello); all'uscita si
+    // torna sempre al fissato. L'hover è abilitato solo dove esiste davvero
+    // (puntatore fine), così su touch vale solo il tap e non resta hover "appiccicato".
+    var fixedIndex = 0;
+    var shownIndex = 0;
     var swapTimer = null;
+    var hoverTimer = null;
+    var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
     function fill(i) {
       var p = PRODOTTI[i]; if (!p) return;
@@ -471,51 +480,99 @@
       else { elDesc.textContent = ''; elDesc.hidden = true; }
       if (p.en) { elEn.textContent = p.en; elEn.hidden = false; }
       else { elEn.textContent = ''; elEn.hidden = true; }
-      panel.setAttribute('aria-labelledby', tabs[i].id);
+      // il pannello resta etichettato dal prodotto FISSATO (non dall'anteprima)
+      panel.setAttribute('aria-labelledby', tabs[fixedIndex].id);
     }
 
-    function selectTab(i, focusIt) {
-      i = (i + tabs.length) % tabs.length;            // wrap (frecce)
-      if (i === current) { if (focusIt) tabs[i].focus(); return; }
-      tabs.forEach(function (t, idx) {                // ARIA + roving tabindex + attivo
-        var on = idx === i;
-        t.setAttribute('aria-selected', on ? 'true' : 'false');
-        t.setAttribute('tabindex', on ? '0' : '-1');
-        t.classList.toggle('is-active', on);
-      });
-      if (focusIt) tabs[i].focus();
-      current = i;
-
-      // aggiorna il dettaglio: istantaneo con reduced-motion, altrimenti
-      // fade + leggero scorrimento (uscita più rapida dell'entrata)
+    // mostra il prodotto i nel pannello (con l'animazione già usata, o istantaneo
+    // con reduced-motion). Non tocca lo stato ARIA/fissato.
+    function show(i) {
+      if (i === shownIndex) return;
+      shownIndex = i;
       if (reduceMotion) { fill(i); return; }
       if (swapTimer) window.clearTimeout(swapTimer);
-      swap.classList.add('is-out');
+      swap.classList.add('is-out');                   // esce: fade + scorrimento
       swapTimer = window.setTimeout(function () {
         fill(i);
         void swap.offsetWidth;                        // reflow: fa ripartire la transizione
         swap.classList.remove('is-out');
-      }, 160);
+      }, 160);                                        // uscita più rapida dell'entrata
     }
 
-    // click sui tag
-    tabs.forEach(function (t, i) {
-      t.addEventListener('click', function () { selectTab(i, true); });
-    });
+    function preview(i) {                             // anteprima temporanea
+      if (hoverTimer) { window.clearTimeout(hoverTimer); hoverTimer = null; }
+      show(i);
+    }
+    function revertToFixed() { show(fixedIndex); }    // ritorno al fissato
 
-    // tastiera (pattern tablist): su/giù — e sx/dx per la riga orizzontale mobile
-    tablist.addEventListener('keydown', function (e) {
-      switch (e.key) {
-        case 'ArrowDown':
-        case 'ArrowRight': e.preventDefault(); selectTab(current + 1, true); break;
-        case 'ArrowUp':
-        case 'ArrowLeft':  e.preventDefault(); selectTab(current - 1, true); break;
-        case 'Home':       e.preventDefault(); selectTab(0, true); break;
-        case 'End':        e.preventDefault(); selectTab(tabs.length - 1, true); break;
+    // FISSA il prodotto i (click / Invio / Spazio): diventa lo stato forte persistente
+    function fix(i) {
+      fixedIndex = i;
+      tabs.forEach(function (t, idx) {
+        var on = idx === i;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.setAttribute('tabindex', on ? '0' : '-1');   // roving: Tab rientra sul fissato
+      });
+      show(i);
+    }
+
+    // sposta il focus (e quindi il roving tabindex) su un tag, mostrando l'anteprima
+    function focusTab(i) {
+      tabs.forEach(function (t, idx) { t.setAttribute('tabindex', idx === i ? '0' : '-1'); });
+      tabs[i].focus();                                 // → l'handler 'focus' fa preview(i)
+    }
+
+    tabs.forEach(function (t, i) {
+      // CLICK / TAP = fissa (per <button>, Invio e Spazio generano 'click')
+      t.addEventListener('click', function () { fix(i); });
+      // FOCUS da tastiera = anteprima (coerente con l'hover)
+      t.addEventListener('focus', function () { preview(i); });
+      // HOVER = anteprima, solo con puntatore fine (mai su touch)
+      if (canHover) {
+        t.addEventListener('mouseenter', function () {
+          if (hoverTimer) window.clearTimeout(hoverTimer);
+          // piccolo debounce: sfiorando in fretta più tag il pannello non sfarfalla
+          hoverTimer = window.setTimeout(function () { show(i); }, 90);
+        });
       }
     });
 
-    // stato iniziale coerente col markup (primo prodotto)
+    // uscita dall'HOVER dall'intera lista → torna al fissato
+    if (canHover) {
+      tablist.addEventListener('mouseleave', function () {
+        if (hoverTimer) { window.clearTimeout(hoverTimer); hoverTimer = null; }
+        revertToFixed();
+      });
+    }
+
+    // uscita dal FOCUS dalla lista (tastiera) → torna al fissato e riporta il
+    // roving tabindex sul fissato, così un successivo Tab rientra sul fissato
+    tablist.addEventListener('focusout', function (e) {
+      if (!tablist.contains(e.relatedTarget)) {
+        tabs.forEach(function (t, idx) { t.setAttribute('tabindex', idx === fixedIndex ? '0' : '-1'); });
+        revertToFixed();
+      }
+    });
+
+    // tastiera: le frecce muovono il FOCUS (roving) → anteprima; Invio/Spazio = click = fissa
+    tablist.addEventListener('keydown', function (e) {
+      var cur = tabs.indexOf(document.activeElement);
+      if (cur < 0) cur = fixedIndex;
+      var next;
+      switch (e.key) {
+        case 'ArrowDown':
+        case 'ArrowRight': next = (cur + 1) % tabs.length; break;
+        case 'ArrowUp':
+        case 'ArrowLeft':  next = (cur - 1 + tabs.length) % tabs.length; break;
+        case 'Home':       next = 0; break;
+        case 'End':        next = tabs.length - 1; break;
+        default: return;
+      }
+      e.preventDefault();
+      focusTab(next);
+    });
+
+    // stato iniziale coerente col markup (primo prodotto, fissato)
     fill(0);
   })();
 
