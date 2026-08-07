@@ -604,33 +604,45 @@ body.modal-open { overflow: hidden; }
 }
 
 /* layout: la card ESCE dal container e usa tutta la larghezza della fascia.
-   Dettaglio a SINISTRA (allineato al gutter del sito), tag grandi a DESTRA che
-   sporgono oltre il bordo (ritagliati da overflow:hidden della sezione → niente
-   scroll orizzontale). */
+   SINISTRA = immagine grande (da sx fino al centro) con overlay; DESTRA = titolo
+   in cima + tag grandi che sporgono oltre il bordo (ritagliati da overflow:hidden
+   della sezione → niente scroll orizzontale). */
 .prenota__card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) min(52vw, 620px);   /* dettaglio | tag */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);   /* immagine (sx→centro) | destra */
   align-items: center;
   gap: clamp(28px, 4vw, 60px);
-  padding-left: var(--gutter);   /* dettaglio allineato al contenuto del sito */
-  padding-right: 0;              /* i tag arrivano fino al bordo... */
+  padding-left: var(--gutter);   /* immagine allineata al contenuto del sito */
+  padding-right: 0;              /* i tag arrivano fino al bordo e oltre */
 }
 
-/* --- DETTAGLIO (colonna sinistra) — immagine + testo --- */
+/* --- COLONNA DESTRA — titolo/nota + lista tag --- */
+.prenota__right {
+  grid-column: 2; grid-row: 1;
+  display: flex; flex-direction: column; gap: clamp(20px, 3vw, 34px);
+  min-width: 0;
+}
+/* header spostato a destra: testo allineato a destra, sopra i tag */
+.prenota__head {
+  max-width: none; margin: 0; text-align: right;
+  padding-right: clamp(16px, 3vw, 48px);   /* non incollato al bordo destro */
+}
+.prenota__head .eyebrow { justify-content: flex-end; }
+.prenota__head .prenota__note { margin-top: 1rem; }
+
+/* --- COLONNA SINISTRA — immagine grande con overlay --- */
 .prenota__panel {
   grid-column: 1; grid-row: 1;
-  display: flex; flex-direction: column; align-items: flex-start;
-  gap: .35rem;
+  display: block; min-width: 0;
 }
 .prenota__panel:focus-visible { outline: 3px solid #dfe6c0; outline-offset: 6px; border-radius: 8px; }
-/* immagine del prodotto: frame arrotondato + ombra + vignetta, come le foto del
-   sito (.dish__img / .ambiente__cell). aspect-ratio fisso → nessun layout shift. */
+/* immagine del prodotto: grande, riempie la colonna (da sx al centro), frame
+   arrotondato + ombra + vignetta come le foto del sito. aspect-ratio → no CLS. */
 .prenota__media {
-  position: relative; width: 100%; max-width: 460px;
-  aspect-ratio: 3 / 2;
+  position: relative; width: 100%;
+  aspect-ratio: 4 / 3;           /* altezza generosa */
   border-radius: var(--radius-lg); overflow: hidden;
   box-shadow: var(--shadow-md);
-  margin-bottom: 1.1rem;
 }
 .prenota__media img {
   width: 100%; height: 100%; object-fit: cover; object-position: center;
@@ -699,14 +711,27 @@ body.modal-open { overflow: hidden; }
 /* wrapper animato: al cambio prodotto fa fade + leggero scorrimento (come i
    [data-reveal] del sito, stesso easing). L'uscita è più rapida dell'entrata. */
 .prenota__swap {
+  position: relative;   /* contesto per l'overlay dei testi sopra l'immagine */
   transition: opacity .34s var(--ease), transform .34s var(--ease);
 }
 .prenota__swap.is-out {
   opacity: 0; transform: translateY(12px);
   transition-duration: .16s;   /* exit-faster-than-enter */
 }
-.prenota__name { font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1.1; color: #fff; }
-.prenota__price { margin-top: .3rem; display: flex; align-items: baseline; gap: .5em; flex-wrap: wrap; }
+/* overlay: nome/prezzo/CTA DENTRO l'immagine, in basso, con scrim che garantisce
+   contrasto ≥4.5:1 su qualsiasi foto (anche chiara come l'agnello nel prato) */
+.prenota__overlay {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: .35rem;
+  padding: clamp(18px, 2.6vw, 36px);
+  background: linear-gradient(to top,
+    rgba(15, 16, 10, .90) 0%, rgba(15, 16, 10, .70) 38%, rgba(15, 16, 10, .28) 68%, transparent 100%);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+.prenota__name { font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1.1; color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .5); }
+.prenota__price { margin-top: .2rem; display: flex; align-items: baseline; gap: .5em; flex-wrap: wrap; }
 .prenota__amount {
   font-family: var(--heading-font); font-weight: 700;
   font-size: clamp(1.5rem, 2.6vw, 2rem);
@@ -722,7 +747,7 @@ body.modal-open { overflow: hidden; }
 }
 /* CTA: resta .btn--primary (olive-deep/crema, già usato sul fondo scuro dell'hero);
    qui aggiungo un'ombra più marcata per staccarlo bene dalla fascia scura */
-.prenota__cta { margin-top: clamp(1.2rem, 2.5vw, 1.8rem); align-self: flex-start; box-shadow: 0 12px 30px rgba(0, 0, 0, .4); }
+.prenota__cta { margin-top: .8rem; align-self: flex-start; box-shadow: 0 12px 30px rgba(0, 0, 0, .5); }
 .prenota__cta:hover { box-shadow: 0 18px 38px rgba(0, 0, 0, .48); }
 
 /* =====================================================================
@@ -799,14 +824,17 @@ body.modal-open { overflow: hidden; }
    I tag passano in cima come riga scorrevole orizzontale (restano primi nel
    DOM, quindi finiscono naturalmente sopra il dettaglio), il dettaglio sotto. */
 @media (max-width: 800px) {
-  /* niente sporgenza su mobile: colonna singola con gutter su entrambi i lati,
-     tag come riga scrollabile IN ALTO (grid-row 1), dettaglio sotto (grid-row 2) */
+  /* colonna singola con gutter su entrambi i lati: titolo + tag IN ALTO
+     (grid-row 1), immagine sotto (grid-row 2) */
   .prenota__card {
     grid-template-columns: 1fr; gap: clamp(20px, 4vw, 30px);
     padding-left: var(--gutter); padding-right: var(--gutter);
   }
+  .prenota__right { grid-column: 1; grid-row: 1; gap: clamp(16px, 4vw, 24px); }
+  /* su mobile il titolo torna centrato sopra la riga dei tag */
+  .prenota__head { text-align: center; padding-right: 0; }
+  .prenota__head .eyebrow { justify-content: center; }
   .prenota__tags {
-    grid-column: 1; grid-row: 1;
     transform: none;                 /* annulla la sporgenza desktop */
     flex-direction: row; align-self: stretch;
     gap: 10px;
@@ -822,7 +850,6 @@ body.modal-open { overflow: hidden; }
     scroll-snap-align: start;
   }
   .prenota__panel { grid-column: 1; grid-row: 2; }
-  .prenota__media { max-width: none; }   /* immagine a piena larghezza del dettaglio */
 }
 
 /* Reduced motion */

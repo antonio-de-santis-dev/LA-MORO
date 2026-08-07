@@ -253,62 +253,61 @@
 
     <!-- ============ SOTTO PRENOTAZIONE ============ -->
     <section class="section prenota" id="sotto-prenotazione">
-      <div class="container">
-        <header class="section-head prenota__head" data-reveal>
-          <p class="eyebrow eyebrow--light"><span class="sprig" aria-hidden="true"></span> Sotto prenotazione</p>
-          <h2>I piatti su prenotazione</h2>
-          <p class="prenota__note">
-            <span class="prenota__note-dot" aria-hidden="true"></span>
-            Da richiedere 24h prima · porzioni minime 4
-          </p>
-        </header>
-      </div>
-
-      <!-- La card esce dal .container: il dettaglio resta a sinistra (allineato al
-           gutter del sito), mentre i tag a destra SPORGONO oltre il bordo destro.
-           overflow:hidden sulla sezione ritaglia la sporgenza → niente scroll oriz.
-           DOM: tablist PRIMA del pannello (ordine ARIA/tastiera corretto e, su
-           mobile impilato, tag in alto → il risultato appare sotto). Le colonne
-           sono posizionate via grid-column, non con 'order'. -->
+      <!-- Layout: SINISTRA = immagine grande (da sx fino al centro) con nome/prezzo/
+           CTA in overlay dentro la foto; DESTRA = titolo+nota IN CIMA, poi la lista
+           dei tag. La colonna destra è PRIMA nel DOM (ordine ARIA tablist→tabpanel
+           corretto e, su mobile impilato, titolo+tag sopra → il risultato appare
+           sotto). Le colonne sono posizionate via grid-column, non con 'order'. -->
       <div class="prenota__card" data-reveal>
-        <!-- TAG/TABLIST (colonna destra, grandi, ancorati e sporgenti a destra) -->
-        <div class="prenota__tags" role="tablist" aria-orientation="vertical"
-             aria-label="Scegli un piatto su prenotazione">
-          <!-- attivazione MANUALE: hover/focus = anteprima, click/Invio/Spazio = fissa.
-               Il primo prodotto è fissato di default (aria-selected="true"). -->
-          <button class="prenota__tag" role="tab" id="prenotaTab-0"
-                  aria-controls="prenotaPanel" aria-selected="true" tabindex="0" data-index="0">
-            <span class="prenota__tag-dot" aria-hidden="true"></span>
-            <span class="prenota__tag-label">Agnello</span>
-          </button>
-          <button class="prenota__tag" role="tab" id="prenotaTab-1"
-                  aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="1">
-            <span class="prenota__tag-dot" aria-hidden="true"></span>
-            <span class="prenota__tag-label">Pollo ruspante</span>
-          </button>
-          <button class="prenota__tag" role="tab" id="prenotaTab-2"
-                  aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="2">
-            <span class="prenota__tag-dot" aria-hidden="true"></span>
-            <span class="prenota__tag-label">Coniglio</span>
-          </button>
-          <button class="prenota__tag" role="tab" id="prenotaTab-3"
-                  aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="3">
-            <span class="prenota__tag-dot" aria-hidden="true"></span>
-            <span class="prenota__tag-label">Pezzetti di cavallo</span>
-          </button>
-          <button class="prenota__tag" role="tab" id="prenotaTab-4"
-                  aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="4">
-            <span class="prenota__tag-dot" aria-hidden="true"></span>
-            <span class="prenota__tag-label">Bruscatizzi</span>
-          </button>
-          <button class="prenota__tag" role="tab" id="prenotaTab-5"
-                  aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="5">
-            <span class="prenota__tag-dot" aria-hidden="true"></span>
-            <span class="prenota__tag-label">Municeddhe</span>
-          </button>
+        <!-- COLONNA DESTRA — titolo/nota sopra, lista tag sotto -->
+        <div class="prenota__right">
+          <header class="section-head prenota__head">
+            <p class="eyebrow eyebrow--light"><span class="sprig" aria-hidden="true"></span> Sotto prenotazione</p>
+            <h2>I piatti su prenotazione</h2>
+            <p class="prenota__note">
+              <span class="prenota__note-dot" aria-hidden="true"></span>
+              Da richiedere 24h prima · porzioni minime 4
+            </p>
+          </header>
+
+          <div class="prenota__tags" role="tablist" aria-orientation="vertical"
+               aria-label="Scegli un piatto su prenotazione">
+            <!-- attivazione MANUALE: hover/focus = anteprima, click/Invio/Spazio = fissa.
+                 Il primo prodotto è fissato di default (aria-selected="true"). -->
+            <button class="prenota__tag" role="tab" id="prenotaTab-0"
+                    aria-controls="prenotaPanel" aria-selected="true" tabindex="0" data-index="0">
+              <span class="prenota__tag-dot" aria-hidden="true"></span>
+              <span class="prenota__tag-label">Agnello</span>
+            </button>
+            <button class="prenota__tag" role="tab" id="prenotaTab-1"
+                    aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="1">
+              <span class="prenota__tag-dot" aria-hidden="true"></span>
+              <span class="prenota__tag-label">Pollo ruspante</span>
+            </button>
+            <button class="prenota__tag" role="tab" id="prenotaTab-2"
+                    aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="2">
+              <span class="prenota__tag-dot" aria-hidden="true"></span>
+              <span class="prenota__tag-label">Coniglio</span>
+            </button>
+            <button class="prenota__tag" role="tab" id="prenotaTab-3"
+                    aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="3">
+              <span class="prenota__tag-dot" aria-hidden="true"></span>
+              <span class="prenota__tag-label">Pezzetti di cavallo</span>
+            </button>
+            <button class="prenota__tag" role="tab" id="prenotaTab-4"
+                    aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="4">
+              <span class="prenota__tag-dot" aria-hidden="true"></span>
+              <span class="prenota__tag-label">Bruscatizzi</span>
+            </button>
+            <button class="prenota__tag" role="tab" id="prenotaTab-5"
+                    aria-controls="prenotaPanel" aria-selected="false" tabindex="-1" data-index="5">
+              <span class="prenota__tag-dot" aria-hidden="true"></span>
+              <span class="prenota__tag-label">Municeddhe</span>
+            </button>
+          </div>
         </div>
 
-        <!-- DETTAGLIO (colonna sinistra) — immagine + testo + CTA -->
+        <!-- COLONNA SINISTRA — immagine grande con nome/prezzo/CTA in overlay -->
         <div class="prenota__panel" id="prenotaPanel" role="tabpanel"
              aria-labelledby="prenotaTab-0" aria-live="polite" tabindex="0">
           <div class="prenota__swap" id="prenotaSwap">
@@ -316,16 +315,18 @@
               <img id="prenotaImg" src="assets/images/Imagini-i-piatti-su-prenotazione/Agnello.png"
                    width="1280" height="720" loading="lazy" alt="Un agnello in un prato fiorito">
             </div>
-            <h3 class="prenota__name" id="prenotaName">Agnello</h3>
-            <p class="prenota__price">
-              <span class="prenota__amount" id="prenotaAmount">€ 15,00</span>
-              <span class="prenota__unit" id="prenotaUnit">a porzione</span>
-            </p>
-            <p class="prenota__desc" id="prenotaDesc" hidden></p>
-            <p class="prenota__en" id="prenotaEn" hidden></p>
+            <div class="prenota__overlay">
+              <h3 class="prenota__name" id="prenotaName">Agnello</h3>
+              <p class="prenota__price">
+                <span class="prenota__amount" id="prenotaAmount">€ 15,00</span>
+                <span class="prenota__unit" id="prenotaUnit">a porzione</span>
+              </p>
+              <p class="prenota__desc" id="prenotaDesc" hidden></p>
+              <p class="prenota__en" id="prenotaEn" hidden></p>
+              <a class="btn btn--primary prenota__cta" id="prenotaCall" href="tel:+390000000000"
+                 aria-label="Prenota ora chiamando l'agriturismo">Prenota ora</a>
+            </div>
           </div>
-          <a class="btn btn--primary prenota__cta" id="prenotaCall" href="tel:+390000000000"
-             aria-label="Prenota ora chiamando l'agriturismo">Prenota ora</a>
         </div>
       </div>
     </section>
