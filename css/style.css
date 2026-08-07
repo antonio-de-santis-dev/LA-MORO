@@ -523,8 +523,13 @@ body.modal-open { overflow: hidden; }
 .ambiente__mosaic { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(16px, 2.5vw, 28px); }
 .ambiente__cell { position: relative; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); margin: 0; }
 .ambiente__cell img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
-.ambiente__cell--wide img { min-height: 320px; }
-.ambiente__cell--tall img { min-height: 460px; }
+/* crop calibrato per foto con proporzioni diverse dai box del mosaico:
+   - wide (box orizzontale): LaSera è verticale → mostra la fascia centrale con
+     le lucine e i tavoli, tagliando cielo in alto e pavimento vuoto in basso;
+   - tall (box verticale): AlTramonto è orizzontale → banda centrale col tavolo
+     lungo, gli ulivi e il tramonto. object-fit già cover su .ambiente__cell img. */
+.ambiente__cell--wide img { min-height: 320px; object-position: center 42%; }
+.ambiente__cell--tall img { min-height: 460px; object-position: center; }
 .ambiente__cell:hover img { transform: scale(1.05); }
 .ambiente__cell figcaption {
   position: absolute; left: 18px; bottom: 16px; z-index: 2;
