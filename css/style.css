@@ -583,7 +583,8 @@ body.modal-open { overflow: hidden; }
    (hover/focus, bordo schiarito + lift). Easing signature --ease.
    ===================================================================== */
 .prenota {
-  min-height: 60vh; overflow: hidden;
+  min-height: 74vh; overflow: hidden;
+  padding-block: 0;   /* niente padding verticale: l'immagine bleeda fino ai bordi alto/basso della fascia */
   /* fondo scuro elegante nei toni del sito (olive-black → brown-deep) con un
      accenno di luce oliva in alto: coerente con .prodotti senza foto fuori tema */
   background:
@@ -615,17 +616,22 @@ body.modal-open { overflow: hidden; }
 .prenota__card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);   /* immagine (sx→centro) | destra */
-  align-items: center;
+  align-items: stretch;          /* l'immagine riempie tutta l'altezza della fascia */
+  min-height: 74vh;
   gap: clamp(28px, 4vw, 60px);
-  padding-left: var(--gutter);   /* immagine allineata al contenuto del sito */
+  padding-left: 0;               /* immagine a filo del bordo sinistro (bleed) */
   padding-right: 0;              /* i tag arrivano fino al bordo e oltre */
 }
 
 /* --- COLONNA DESTRA — titolo/nota + lista tag --- */
 .prenota__right {
   grid-column: 2; grid-row: 1;
-  display: flex; flex-direction: column; gap: clamp(20px, 3vw, 34px);
+  display: flex; flex-direction: column; justify-content: center;
+  gap: clamp(20px, 3vw, 34px);
   min-width: 0;
+  /* la sezione non ha più padding verticale: lo diamo qui alla colonna testo */
+  padding-block: clamp(48px, 8vh, 96px);
+  padding-right: var(--gutter);
 }
 /* header spostato a destra: testo allineato a destra, sopra i tag */
 .prenota__head {
@@ -641,26 +647,26 @@ body.modal-open { overflow: hidden; }
   display: block; min-width: 0;
 }
 .prenota__panel:focus-visible { outline: 3px solid #dfe6c0; outline-offset: 6px; border-radius: 8px; }
-/* immagine del prodotto: grande, riempie la colonna (da sx al centro), frame
-   arrotondato + ombra + vignetta come le foto del sito. aspect-ratio → no CLS. */
+/* immagine del prodotto: FULL-BLEED — riempie tutta la colonna sinistra, in alto,
+   in basso e a filo del bordo sinistro. Niente angoli/margini. */
 .prenota__media {
-  position: relative; width: 100%;
-  aspect-ratio: 4 / 3;           /* altezza generosa */
-  border-radius: var(--radius-lg); overflow: hidden;
-  box-shadow: var(--shadow-md);
+  position: relative; width: 100%; height: 100%;
+  overflow: hidden;
 }
+/* due layer sovrapposti per il CROSSFADE: #prenotaImg (base) + .prenota__img-ghost
+   (mostra la nuova foto in dissolvenza). Entrambi riempiono con object-fit cover. */
 .prenota__media img {
+  position: absolute; inset: 0;
   width: 100%; height: 100%; object-fit: cover; object-position: center;
   display: block;
-  transition: transform .7s var(--ease);   /* stesso linguaggio di .dish__img img */
 }
-@media (hover: hover) and (pointer: fine) {
-  .prenota__media:hover img { transform: scale(1.05); }   /* zoom come .ambiente__cell:hover img */
-}
+/* il ghost parte invisibile; la transizione di opacità è impostata dal JS al
+   momento del cambio (~.42s ease-out) → reazione immediata, dissolvenza morbida */
+.prenota__img-ghost { opacity: 0; }
 /* vignetta per fondere l'immagine nel fondo scuro (come .ambiente__cell::after) */
 .prenota__media::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(180deg, transparent 52%, rgba(27, 28, 18, .55) 100%);
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background: linear-gradient(180deg, transparent 50%, rgba(15, 16, 10, .40) 100%);
 }
 
 /* --- TAG / TABLIST (colonna destra, grandi, sporgenti) --- */
@@ -713,37 +719,34 @@ body.modal-open { overflow: hidden; }
   transform: scale(0); transition: transform .3s var(--ease);
 }
 .prenota__tag[aria-selected="true"] .prenota__tag-dot { transform: scale(1); }
-/* wrapper animato: al cambio prodotto fa fade + leggero scorrimento (come i
-   [data-reveal] del sito, stesso easing). L'uscita è più rapida dell'entrata. */
-.prenota__swap {
-  position: relative;   /* contesto per l'overlay dei testi sopra l'immagine */
-  transition: opacity .34s var(--ease), transform .34s var(--ease);
-}
-.prenota__swap.is-out {
-  opacity: 0; transform: translateY(12px);
-  transition-duration: .16s;   /* exit-faster-than-enter */
-}
-/* overlay: nome/prezzo/CTA DENTRO l'immagine, in basso, con scrim che garantisce
-   contrasto ≥4.5:1 su qualsiasi foto (anche chiara come l'agnello nel prato) */
+/* i cloni servono SOLO al carosello automatico mobile: su desktop sono nascosti
+   (il carosello e i cloni compaiono solo nel @media max-width:800px) */
+.prenota__tag[data-clone] { display: none; }
+.prenota__swap { position: relative; height: 100%; }   /* riempie il pannello full-height */
+/* overlay: nome/prezzo/CTA DENTRO l'immagine, in basso, con scrim forte che
+   garantisce contrasto ≥4.5:1 su qualsiasi foto (anche chiara come l'agnello) */
 .prenota__overlay {
-  position: absolute; left: 0; right: 0; bottom: 0;
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
   display: flex; flex-direction: column; align-items: flex-start;
-  gap: .35rem;
-  padding: clamp(18px, 2.6vw, 36px);
+  gap: .4rem;
+  padding: clamp(22px, 3vw, 52px);
   background: linear-gradient(to top,
-    rgba(15, 16, 10, .90) 0%, rgba(15, 16, 10, .70) 38%, rgba(15, 16, 10, .28) 68%, transparent 100%);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    rgba(12, 13, 8, .94) 0%, rgba(12, 13, 8, .78) 34%, rgba(12, 13, 8, .34) 66%, transparent 100%);
 }
-.prenota__name { font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1.1; color: #fff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, .5); }
-.prenota__price { margin-top: .2rem; display: flex; align-items: baseline; gap: .5em; flex-wrap: wrap; }
+/* testo overlay PIÙ GRANDE e leggibile (font maggiore + peso + ombra) */
+.prenota__name {
+  font-size: clamp(2.1rem, 4.2vw, 3.4rem); line-height: 1.05; color: #fff;
+  font-weight: 700; text-shadow: 0 2px 14px rgba(0, 0, 0, .65);
+}
+.prenota__price { margin-top: .3rem; display: flex; align-items: baseline; gap: .5em; flex-wrap: wrap; }
 .prenota__amount {
   font-family: var(--heading-font); font-weight: 700;
-  font-size: clamp(1.5rem, 2.6vw, 2rem);
-  color: #e6a074;   /* cotto schiarito: accento ruggine con contrasto ≥4.5:1 su fondo scuro */
+  font-size: clamp(2rem, 3.4vw, 2.9rem);
+  color: #f0a878;   /* cotto schiarito: accento ruggine con ottimo contrasto sul fondo scuro */
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .6);
 }
-.prenota__unit { font-size: .95rem; color: #d8d5c2; font-weight: 600; }
+.prenota__unit { font-size: 1.05rem; color: #e7e3d4; font-weight: 600; text-shadow: 0 1px 8px rgba(0,0,0,.6); }
 .prenota__desc { margin-top: .7rem; color: #ece9da; font-size: 1.02rem; line-height: 1.55; }
 .prenota__desc[hidden], .prenota__en[hidden] { display: none; }
 .prenota__en {
@@ -825,37 +828,48 @@ body.modal-open { overflow: hidden; }
   .footer__grid { grid-template-columns: 1fr; gap: 32px; }
 }
 
-/* Sotto prenotazione: sotto gli 800px le due colonne si impilano.
-   I tag passano in cima come riga scorrevole orizzontale (restano primi nel
-   DOM, quindi finiscono naturalmente sopra il dettaglio), il dettaglio sotto. */
+/* Sotto prenotazione mobile: colonna singola, titolo + CAROSELLO AUTO dei tag in
+   alto, immagine full-width sotto. */
 @media (max-width: 800px) {
-  /* colonna singola con gutter su entrambi i lati: titolo + tag IN ALTO
-     (grid-row 1), immagine sotto (grid-row 2) */
+  .prenota { min-height: 0; }
   .prenota__card {
-    grid-template-columns: 1fr; gap: clamp(20px, 4vw, 30px);
-    padding-left: var(--gutter); padding-right: var(--gutter);
+    grid-template-columns: 1fr; gap: 0; min-height: 0;
+    padding: 0;
   }
-  .prenota__right { grid-column: 1; grid-row: 1; gap: clamp(16px, 4vw, 24px); }
-  /* su mobile il titolo torna centrato sopra la riga dei tag */
-  .prenota__head { text-align: center; padding-right: 0; }
+  .prenota__right {
+    grid-column: 1; grid-row: 1;
+    justify-content: flex-start;
+    gap: clamp(16px, 4vw, 24px);
+    padding: clamp(40px, 9vw, 64px) 0 clamp(22px, 5vw, 32px);
+    overflow: hidden;                /* ritaglia la track del carosello */
+  }
+  .prenota__head { text-align: center; padding-right: 0; padding-inline: var(--gutter); }
   .prenota__head .eyebrow { justify-content: center; }
+
+  /* --- CAROSELLO AUTOMATICO dei tag: loop infinito, lento e continuo --- */
   .prenota__tags {
-    transform: none;                 /* annulla la sporgenza desktop */
-    flex-direction: row; align-self: stretch;
-    gap: 10px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-    padding-bottom: 4px;   /* spazio per lo scroll senza tagliare l'ombra */
-    /* la riga scorre dentro il suo contenitore: nessun overflow di pagina */
+    transform: none;                 /* niente sporgenza desktop */
+    flex-direction: row;
+    align-self: flex-start;
+    width: max-content;              /* la track è larga quanto i suoi item (reali + cloni) */
+    gap: 0; padding: 0;
+    animation: prenotaMarquee 26s linear infinite;   /* si muove da solo, in continuo */
+    will-change: transform;
   }
-  .prenota__tag {
-    flex: 0 0 auto; width: auto;
-    font-size: 1rem;                 /* leggermente più compatto in riga */
-    scroll-snap-align: start;
-  }
+  /* margin-right (non gap) così ogni item include la sua spaziatura: translateX(-50%)
+     combacia ESATTAMENTE con una copia → loop senza salto */
+  .prenota__tag { flex: 0 0 auto; width: auto; font-size: 1rem; margin-right: 10px; }
+  .prenota__tag[data-clone] { display: flex; }       /* i cloni servono al loop senza salto */
+
+  /* immagine full-width sotto, con altezza definita su mobile */
   .prenota__panel { grid-column: 1; grid-row: 2; }
+  .prenota__media { height: auto; aspect-ratio: 4 / 3; }
+  .prenota__swap { height: auto; }
+  .prenota__overlay { padding: clamp(18px, 5vw, 30px); }
 }
+/* loop infinito senza salto: la track ha 2 copie identiche (reali + cloni),
+   quindi translateX(-50%) riporta esattamente al punto di partenza */
+@keyframes prenotaMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -864,4 +878,7 @@ body.modal-open { overflow: hidden; }
   .intro__logo { opacity: 1; transform: none; }
   /* il dettaglio "su prenotazione" resta sempre pieno: nessuna dissolvenza */
   .prenota__swap { opacity: 1 !important; transform: none !important; }
+  /* niente auto-scroll dei tag: carosello fermo e cloni nascosti (solo i 6 reali) */
+  .prenota__tags { animation: none !important; }
+  .prenota__tag[data-clone] { display: none !important; }
 }

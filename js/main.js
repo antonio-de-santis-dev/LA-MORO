@@ -449,13 +449,13 @@
       { nome: 'Municeddhe',          prezzo: '€ 11,00', unita: '',           it: 'lumache di terra',     en: 'Land snails',img: 'Municede.jpeg',                  alt: 'Municeddhe (lumache) in salsa di pomodoro' }
     ];
 
-    var swap    = document.getElementById('prenotaSwap');
     var elName   = document.getElementById('prenotaName');
     var elAmount = document.getElementById('prenotaAmount');
     var elUnit   = document.getElementById('prenotaUnit');
     var elDesc   = document.getElementById('prenotaDesc');
     var elEn     = document.getElementById('prenotaEn');
     var elImg    = document.getElementById('prenotaImg');
+    var ghost    = document.querySelector('.prenota__img-ghost');   // layer per il crossfade
     var callBtn  = document.getElementById('prenotaCall');
 
     // numero centralizzato: un solo punto da cambiare
@@ -465,19 +465,17 @@
     // così il crossfade non mostra lampi bianchi né scatti di caricamento.
     PRODOTTI.forEach(function (p) { var im = new Image(); im.src = IMG_DIR + p.img; });
 
-    // MODELLO: attivazione MANUALE.
-    //  - fixedIndex = prodotto FISSATO col click/Invio (unico con aria-selected)
-    //  - shownIndex = prodotto attualmente MOSTRATO nel pannello (fissato o anteprima)
-    // hover/focus su un tag = ANTEPRIMA (cambia solo il pannello); all'uscita si
-    // torna sempre al fissato. L'hover è abilitato solo dove esiste davvero
-    // (puntatore fine), così su touch vale solo il tap e non resta hover "appiccicato".
+    // MODELLO: attivazione su HOVER/FOCUS = ANTEPRIMA (cambia il pannello SUBITO,
+    // senza debounce, con crossfade morbido dell'immagine); click/Invio = FISSA.
+    // All'uscita da hover/focus si torna sempre al prodotto FISSATO (default).
     var fixedIndex = 0;
     var shownIndex = 0;
-    var swapTimer = null;
-    var hoverTimer = null;
+    var CROSSFADE_MS = 420;      // durata dissolvenza immagine (ease-out)
+    var commitTimer = null;
     var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    function fill(i) {
+    // aggiorna SOLO i testi dell'overlay (nome/prezzo/descrizione) — istantaneo
+    function fillText(i) {
       var p = PRODOTTI[i]; if (!p) return;
       elName.textContent = p.nome;
       elAmount.textContent = p.prezzo;
@@ -487,35 +485,46 @@
       else { elDesc.textContent = ''; elDesc.hidden = true; }
       if (p.en) { elEn.textContent = p.en; elEn.hidden = false; }
       else { elEn.textContent = ''; elEn.hidden = true; }
-      // immagine del prodotto (già precaricata → nessun lampo bianco)
-      if (elImg) {
-        var src = IMG_DIR + p.img;
-        if (elImg.getAttribute('src') !== src) { elImg.src = src; elImg.alt = p.alt || p.nome; }
-      }
       // il pannello resta etichettato dal prodotto FISSATO (non dall'anteprima)
       panel.setAttribute('aria-labelledby', tabs[fixedIndex].id);
     }
 
-    // mostra il prodotto i nel pannello (con l'animazione già usata, o istantaneo
-    // con reduced-motion). Non tocca lo stato ARIA/fissato.
+    // CROSSFADE dell'immagine: il ghost mostra la NUOVA foto e parte SUBITO
+    // (nessun delay/debounce) sfumando in ~.42s ease-out sopra #prenotaImg (foto
+    // corrente); a fine transizione committa su #prenotaImg. Con reduced-motion è
+    // un cambio istantaneo.
+    function setImage(i) {
+      var p = PRODOTTI[i]; if (!p || !elImg) return;
+      var src = IMG_DIR + p.img;
+      if (reduceMotion || !ghost) {
+        elImg.src = src; elImg.alt = p.alt || p.nome;
+        if (ghost) ghost.style.opacity = '0';
+        return;
+      }
+      if (commitTimer) window.clearTimeout(commitTimer);
+      ghost.style.transition = 'none';
+      ghost.style.opacity = '0';
+      ghost.src = src;                                 // preloaded → istantaneo
+      void ghost.offsetWidth;                          // reflow: reazione immediata
+      ghost.style.transition = 'opacity ' + CROSSFADE_MS + 'ms ease-out';
+      ghost.style.opacity = '1';
+      commitTimer = window.setTimeout(function () {
+        elImg.src = src; elImg.alt = p.alt || p.nome;
+        ghost.style.transition = 'none';
+        ghost.style.opacity = '0';
+      }, CROSSFADE_MS + 30);
+    }
+
+    // mostra il prodotto i (testo istantaneo + immagine in crossfade)
     function show(i) {
       if (i === shownIndex) return;
       shownIndex = i;
-      if (reduceMotion) { fill(i); return; }
-      if (swapTimer) window.clearTimeout(swapTimer);
-      swap.classList.add('is-out');                   // esce: fade + scorrimento
-      swapTimer = window.setTimeout(function () {
-        fill(i);
-        void swap.offsetWidth;                        // reflow: fa ripartire la transizione
-        swap.classList.remove('is-out');
-      }, 160);                                        // uscita più rapida dell'entrata
+      fillText(i);
+      setImage(i);
     }
 
-    function preview(i) {                             // anteprima temporanea
-      if (hoverTimer) { window.clearTimeout(hoverTimer); hoverTimer = null; }
-      show(i);
-    }
-    function revertToFixed() { show(fixedIndex); }    // ritorno al fissato
+    function preview(i) { show(i); }                  // hover/focus → anteprima immediata
+    function revertToFixed() { show(fixedIndex); }    // uscita → torna al fissato (default)
 
     // FISSA il prodotto i (click / Invio / Spazio): diventa lo stato forte persistente
     function fix(i) {
@@ -539,22 +548,15 @@
       t.addEventListener('click', function () { fix(i); });
       // FOCUS da tastiera = anteprima (coerente con l'hover)
       t.addEventListener('focus', function () { preview(i); });
-      // HOVER = anteprima, solo con puntatore fine (mai su touch)
+      // HOVER = anteprima IMMEDIATA (nessun debounce/delay), solo con puntatore fine
       if (canHover) {
-        t.addEventListener('mouseenter', function () {
-          if (hoverTimer) window.clearTimeout(hoverTimer);
-          // piccolo debounce: sfiorando in fretta più tag il pannello non sfarfalla
-          hoverTimer = window.setTimeout(function () { show(i); }, 90);
-        });
+        t.addEventListener('mouseenter', function () { preview(i); });
       }
     });
 
-    // uscita dall'HOVER dall'intera lista → torna al fissato
+    // uscita dall'HOVER dall'intera lista → torna al fissato (default)
     if (canHover) {
-      tablist.addEventListener('mouseleave', function () {
-        if (hoverTimer) { window.clearTimeout(hoverTimer); hoverTimer = null; }
-        revertToFixed();
-      });
+      tablist.addEventListener('mouseleave', function () { revertToFixed(); });
     }
 
     // uscita dal FOCUS dalla lista (tastiera) → torna al fissato e riporta il
@@ -584,8 +586,22 @@
       focusTab(next);
     });
 
+    // CAROSELLO AUTO (solo mobile): duplico i tag come CLONI decorativi, così la
+    // track CSS può fare il loop infinito senza salto (translateX -50% = una copia).
+    // I cloni sono aria-hidden e non focusabili → non alterano la tablist per gli
+    // screen reader; su desktop restano nascosti (display:none via [data-clone]).
+    tabs.forEach(function (t) {
+      var c = t.cloneNode(true);
+      c.removeAttribute('id');                 // niente id duplicati
+      c.setAttribute('data-clone', '');
+      c.setAttribute('aria-hidden', 'true');
+      c.setAttribute('tabindex', '-1');
+      tablist.appendChild(c);
+    });
+
     // stato iniziale coerente col markup (primo prodotto, fissato)
-    fill(0);
+    fillText(0);
+    if (ghost) ghost.style.opacity = '0';
   })();
 
   /* ---------- FOOTER YEAR ---------- */

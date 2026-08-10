@@ -314,6 +314,9 @@
             <div class="prenota__media">
               <img id="prenotaImg" src="assets/images/Imagini-i-piatti-su-prenotazione/Agnello.png"
                    width="1280" height="720" loading="lazy" alt="Un agnello in un prato fiorito">
+              <!-- layer "ghost" solo per il crossfade: mostra la NUOVA foto in
+                   dissolvenza sopra quella corrente, poi il JS committa su #prenotaImg -->
+              <img class="prenota__img-ghost" alt="" aria-hidden="true">
             </div>
             <div class="prenota__overlay">
               <h3 class="prenota__name" id="prenotaName">Agnello</h3>
