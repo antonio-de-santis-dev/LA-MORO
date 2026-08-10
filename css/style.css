@@ -332,7 +332,7 @@ body:not(.intro-done) { overflow: hidden; }
    ===================================================================== */
 .chi-siamo { background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%); }
 .chi-siamo__media { position: relative; }
-.chi-siamo__media img { width: 100%; height: 100%; max-height: 560px; object-fit: cover; object-position: center 42%; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+.chi-siamo__media img { width: 100%; aspect-ratio: 4 / 5; max-height: 700px; object-fit: cover; object-position: center 42%; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
 .media-frame { position: absolute; inset: 16px -16px -16px 16px; border: 2px solid var(--olive); border-radius: var(--radius-lg); z-index: -1; }
 .chi-siamo__text h2 { margin-bottom: 1.1rem; }
 .chi-siamo__text p:not(.eyebrow) { margin-bottom: 1rem; color: #4a4736; }
