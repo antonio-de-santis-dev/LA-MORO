@@ -425,6 +425,185 @@
     });
   })();
 
+  /* ---------- SOTTO PRENOTAZIONE (tabs verticali) ---------- */
+  (function initPrenota() {
+    var tablist = document.querySelector('.prenota__tags');
+    var panel = document.getElementById('prenotaPanel');
+    if (!tablist || !panel) return;
+    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+    if (!tabs.length) return;
+
+    // NUMERO DI TELEFONO — placeholder. Da sostituire QUI, in un UNICO punto,
+    // col numero reale (es. '+393209677022'). Il link tel: viene generato da qui.
+    var PRENOTA_TEL = '+390000000000';
+
+    // dati prodotti (facili da modificare): nome, prezzo, unità, descrizione IT, EN,
+    // immagine (img) e testo alternativo (alt, descrittivo in italiano).
+    var IMG_DIR = 'assets/images/Imagini-i-piatti-su-prenotazione/';
+    var PRODOTTI = [
+      { nome: 'Agnello',             prezzo: '€ 15,00', unita: 'a porzione', it: '',                     en: '',           img: 'Agnello.png',                    alt: 'Un agnello in un prato fiorito' },
+      { nome: 'Pollo ruspante',      prezzo: '€ 15,00', unita: 'a porzione', it: '',                     en: '',           img: 'Polo-Ruspante.jpeg',             alt: 'Galline ruspanti in un campo' },
+      { nome: 'Coniglio',            prezzo: '€ 13,00', unita: 'a porzione', it: '',                     en: '',           img: 'coniglio-ariete.jpg',            alt: 'Un coniglio' },
+      { nome: 'Pezzetti di cavallo', prezzo: '€ 14,00', unita: 'a porzione', it: '',                     en: '',           img: 'Cavalo.jpeg',                    alt: 'Un cavallo al galoppo in un prato' },
+      { nome: 'Bruscatizzi',         prezzo: '€ 13,00', unita: '',           it: 'interiora di agnello', en: 'Lamb offal', img: 'turcinelli-puglia-ricetta.jpg',  alt: 'Turcinelli (interiora di agnello) alla brace' },
+      { nome: 'Municeddhe',          prezzo: '€ 11,00', unita: '',           it: 'lumache di terra',     en: 'Land snails',img: 'Municede.jpeg',                  alt: 'Municeddhe (lumache) in salsa di pomodoro' }
+    ];
+
+    var elName   = document.getElementById('prenotaName');
+    var elAmount = document.getElementById('prenotaAmount');
+    var elUnit   = document.getElementById('prenotaUnit');
+    var elDesc   = document.getElementById('prenotaDesc');
+    var elEn     = document.getElementById('prenotaEn');
+    var elImg    = document.getElementById('prenotaImg');
+    var ghost    = document.querySelector('.prenota__img-ghost');   // layer per il crossfade
+    var callBtn  = document.getElementById('prenotaCall');
+
+    // numero centralizzato: un solo punto da cambiare
+    if (callBtn) callBtn.href = 'tel:' + PRENOTA_TEL;
+
+    // PRELOAD di tutte le immagini: al cambio prodotto la foto è già in cache,
+    // così il crossfade non mostra lampi bianchi né scatti di caricamento.
+    PRODOTTI.forEach(function (p) { var im = new Image(); im.src = IMG_DIR + p.img; });
+
+    // MODELLO: attivazione su HOVER/FOCUS = ANTEPRIMA (cambia il pannello SUBITO,
+    // senza debounce, con crossfade morbido dell'immagine); click/Invio = FISSA.
+    // All'uscita da hover/focus si torna sempre al prodotto FISSATO (default).
+    var fixedIndex = 0;
+    var shownIndex = 0;
+    var CROSSFADE_MS = 420;      // durata dissolvenza immagine (ease-out)
+    var commitTimer = null;
+    var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    // aggiorna SOLO i testi dell'overlay (nome/prezzo/descrizione) — istantaneo
+    function fillText(i) {
+      var p = PRODOTTI[i]; if (!p) return;
+      elName.textContent = p.nome;
+      elAmount.textContent = p.prezzo;
+      if (p.unita) { elUnit.textContent = p.unita; elUnit.hidden = false; }
+      else { elUnit.textContent = ''; elUnit.hidden = true; }
+      if (p.it) { elDesc.textContent = p.it; elDesc.hidden = false; }
+      else { elDesc.textContent = ''; elDesc.hidden = true; }
+      if (p.en) { elEn.textContent = p.en; elEn.hidden = false; }
+      else { elEn.textContent = ''; elEn.hidden = true; }
+      // il pannello resta etichettato dal prodotto FISSATO (non dall'anteprima)
+      panel.setAttribute('aria-labelledby', tabs[fixedIndex].id);
+    }
+
+    // CROSSFADE dell'immagine: il ghost mostra la NUOVA foto e parte SUBITO
+    // (nessun delay/debounce) sfumando in ~.42s ease-out sopra #prenotaImg (foto
+    // corrente); a fine transizione committa su #prenotaImg. Con reduced-motion è
+    // un cambio istantaneo.
+    function setImage(i) {
+      var p = PRODOTTI[i]; if (!p || !elImg) return;
+      var src = IMG_DIR + p.img;
+      if (reduceMotion || !ghost) {
+        elImg.src = src; elImg.alt = p.alt || p.nome;
+        if (ghost) ghost.style.opacity = '0';
+        return;
+      }
+      if (commitTimer) window.clearTimeout(commitTimer);
+      ghost.style.transition = 'none';
+      ghost.style.opacity = '0';
+      ghost.src = src;                                 // preloaded → istantaneo
+      void ghost.offsetWidth;                          // reflow: reazione immediata
+      ghost.style.transition = 'opacity ' + CROSSFADE_MS + 'ms ease-out';
+      ghost.style.opacity = '1';
+      commitTimer = window.setTimeout(function () {
+        elImg.src = src; elImg.alt = p.alt || p.nome;
+        ghost.style.transition = 'none';
+        ghost.style.opacity = '0';
+      }, CROSSFADE_MS + 30);
+    }
+
+    // mostra il prodotto i (testo istantaneo + immagine in crossfade)
+    function show(i) {
+      if (i === shownIndex) return;
+      shownIndex = i;
+      fillText(i);
+      setImage(i);
+    }
+
+    function preview(i) { show(i); }                  // hover/focus → anteprima immediata
+    function revertToFixed() { show(fixedIndex); }    // uscita → torna al fissato (default)
+
+    // FISSA il prodotto i (click / Invio / Spazio): diventa lo stato forte persistente
+    function fix(i) {
+      fixedIndex = i;
+      tabs.forEach(function (t, idx) {
+        var on = idx === i;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.setAttribute('tabindex', on ? '0' : '-1');   // roving: Tab rientra sul fissato
+      });
+      show(i);
+    }
+
+    // sposta il focus (e quindi il roving tabindex) su un tag, mostrando l'anteprima
+    function focusTab(i) {
+      tabs.forEach(function (t, idx) { t.setAttribute('tabindex', idx === i ? '0' : '-1'); });
+      tabs[i].focus();                                 // → l'handler 'focus' fa preview(i)
+    }
+
+    tabs.forEach(function (t, i) {
+      // CLICK / TAP = fissa (per <button>, Invio e Spazio generano 'click')
+      t.addEventListener('click', function () { fix(i); });
+      // FOCUS da tastiera = anteprima (coerente con l'hover)
+      t.addEventListener('focus', function () { preview(i); });
+      // HOVER = anteprima IMMEDIATA (nessun debounce/delay), solo con puntatore fine
+      if (canHover) {
+        t.addEventListener('mouseenter', function () { preview(i); });
+      }
+    });
+
+    // uscita dall'HOVER dall'intera lista → torna al fissato (default)
+    if (canHover) {
+      tablist.addEventListener('mouseleave', function () { revertToFixed(); });
+    }
+
+    // uscita dal FOCUS dalla lista (tastiera) → torna al fissato e riporta il
+    // roving tabindex sul fissato, così un successivo Tab rientra sul fissato
+    tablist.addEventListener('focusout', function (e) {
+      if (!tablist.contains(e.relatedTarget)) {
+        tabs.forEach(function (t, idx) { t.setAttribute('tabindex', idx === fixedIndex ? '0' : '-1'); });
+        revertToFixed();
+      }
+    });
+
+    // tastiera: le frecce muovono il FOCUS (roving) → anteprima; Invio/Spazio = click = fissa
+    tablist.addEventListener('keydown', function (e) {
+      var cur = tabs.indexOf(document.activeElement);
+      if (cur < 0) cur = fixedIndex;
+      var next;
+      switch (e.key) {
+        case 'ArrowDown':
+        case 'ArrowRight': next = (cur + 1) % tabs.length; break;
+        case 'ArrowUp':
+        case 'ArrowLeft':  next = (cur - 1 + tabs.length) % tabs.length; break;
+        case 'Home':       next = 0; break;
+        case 'End':        next = tabs.length - 1; break;
+        default: return;
+      }
+      e.preventDefault();
+      focusTab(next);
+    });
+
+    // CAROSELLO AUTO (solo mobile): duplico i tag come CLONI decorativi, così la
+    // track CSS può fare il loop infinito senza salto (translateX -50% = una copia).
+    // I cloni sono aria-hidden e non focusabili → non alterano la tablist per gli
+    // screen reader; su desktop restano nascosti (display:none via [data-clone]).
+    tabs.forEach(function (t) {
+      var c = t.cloneNode(true);
+      c.removeAttribute('id');                 // niente id duplicati
+      c.setAttribute('data-clone', '');
+      c.setAttribute('aria-hidden', 'true');
+      c.setAttribute('tabindex', '-1');
+      tablist.appendChild(c);
+    });
+
+    // stato iniziale coerente col markup (primo prodotto, fissato)
+    fillText(0);
+    if (ghost) ghost.style.opacity = '0';
+  })();
+
   /* ---------- FOOTER YEAR ---------- */
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
